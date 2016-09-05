@@ -30,7 +30,7 @@ public class TestStubWeatherService implements WeatherService {
 
     // Validate player id
     if (groupName.equals("grp01")) {
-      weather.put("success", "true");
+      weather.put("authenticated", "true");
       weather.put("errorMessage", "OK");
 
       weather.put("windspeed", "1.2");
@@ -40,7 +40,7 @@ public class TestStubWeatherService implements WeatherService {
       weather.put("feelslike", "-2.7");
       weather.put("time", "Thu, 05 Mar 2015 09:38:37 +0100");
     } else {
-      weather.put("success", "false");
+      weather.put("authenticated", "false");
       weather.put("errorMessage", "GroupName " + groupName + " or playerID "
           + playerID + " is not authenticated");
     }

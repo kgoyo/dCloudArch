@@ -43,7 +43,7 @@ public class TestWeather {
     // Test the raw weather service api for unknown players
     WeatherService ws = new TestStubWeatherService();
     JSONObject json = ws.requestWeather("grp02", "user-003", Region.COPENHAGEN);
-    assertThat(json.get("success").toString(), is("false"));
+    assertThat(json.get("authenticated").toString(), is("false"));
     assertThat(json.get("errorMessage").toString(), is("GroupName grp02 or playerID user-003 is not authenticated"));
     
     // Try it using the full api
