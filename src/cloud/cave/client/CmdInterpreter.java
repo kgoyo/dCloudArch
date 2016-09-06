@@ -1,6 +1,7 @@
 package cloud.cave.client;
 
 import java.io.*;
+import java.util.List;
 
 import org.json.simple.*;
 
@@ -152,10 +153,24 @@ public class CmdInterpreter {
       }
 
     } else if (command.equals("post") && tokens.length > 1) {
-      systemOut.println("POST awaits implementation");
+      String message = "";
+      message = mergeTokens(tokens, 1);
+      player.addMessage(message);
+      systemOut.println(message);
 
     } else if (command.equals("read")) {
-      systemOut.println("READ awaits implementation");
+      List<String> wall = player.getMessageList();
+      String res = "";
+      if (wall.size() == 0) {
+    	  res = "the wall is empty";
+      } else {
+	      for (String s : wall) {
+	    	  res += s +" ";
+	      }
+	      res = res.substring(0, res.length()-1);
+      }
+      
+      systemOut.println(res);
 
     } else if (command.equals("sys")) {
       systemOut.println("System information:");
