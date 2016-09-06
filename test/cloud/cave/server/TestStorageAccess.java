@@ -112,6 +112,11 @@ class SpyCaveStorage implements CaveStorage {
     incrementGetCount();
     return decoratee.getSetOfExitsFromRoom(positionString);
   }
+  
+  public List<String> getMessageList(String positionString) {
+	  //TODO FIX
+	  return null;
+  }
 
 
   private int getCount = 0;

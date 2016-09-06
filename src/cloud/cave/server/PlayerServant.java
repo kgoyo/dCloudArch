@@ -135,15 +135,13 @@ public class PlayerServant implements Player {
 
   @Override
   public void addMessage(String message) {
-    // TODO: Exercise - solve the 'wall' exercise
+	  List<String> contents = storage.getMessageList(getPosition());
+	  contents.add("[" + name + "] " + message);
   }
 
   @Override
   public List<String> getMessageList() {
-    // TODO: Exercise - solve the 'wall' exercise
-    List<String> contents = new ArrayList<String>();
-    contents.add("NOT IMPLEMENTED YET");
-    return contents;
+    return storage.getMessageList(getPosition()); 
   }
 
   @Override

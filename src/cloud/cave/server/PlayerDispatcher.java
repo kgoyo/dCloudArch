@@ -130,6 +130,21 @@ public class PlayerDispatcher implements Dispatcher {
         reply = Marshaling
             .createValidReplyWithReturnValue(player.getWeather());
       }
+      
+      // === ADD MESSAGE
+      else if (methodKey.equals(MarshalingKeys.ADD_MESSAGE_METHOD_KEY)) {
+    	  player.addMessage(parameter1);
+    	  reply = Marshaling.createValidReplyWithReturnValue("" + true);
+      }
+      
+      // === GET MESSAGE LIST
+      else if (methodKey.equals(MarshalingKeys.GET_MESSAGE_LIST_METHOD_KEY)) {
+    	  List<String> list = player.getMessageList();
+    	  String[] asArray = new String[list.size()];
+    	  list.toArray(asArray);
+    	  
+    	  reply = Marshaling.createValidReplyWithReturnValue("notused",asArray);
+      }
     } catch (PlayerSessionExpiredException exc) {
       reply = Marshaling.createInvalidReplyWithExplanation(StatusCode.SERVER_PLAYER_SESSION_EXPIRED_FAILURE,
           exc.getMessage());

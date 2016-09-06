@@ -45,6 +45,15 @@ public interface CaveStorage extends ExternalService {
    * @return set of directions that leads to another room
    */
   List<Direction> getSetOfExitsFromRoom(String positionString);
+  
+  /**
+   * returns the wall of messages at a given position
+   * 
+   * @param positionString
+   *          position of the room whose wall is wanted
+   * @return list of messages on the wall for the given room position
+   */
+  List<String> getMessageList(String positionString);
 
   // === Player record related
 

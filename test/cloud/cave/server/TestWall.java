@@ -34,11 +34,54 @@ public class TestWall {
   public void shouldWriteToAndReadWall() {
     player.addMessage("This is message no. 1");
     List<String> wallContents = player.getMessageList();
-    
-    // TODO: Exercise - solve the 'wall' exercise
 
     assertThat( wallContents.size(), is(1));
-    assertThat( wallContents.get(0), containsString("NOT IMPLEMENTED YET"));
+    assertThat( wallContents.get(0), containsString("[Mikkel] This is message no. 1"));
   }
+  
+  @Test
+  public void shouldWriteToAndReadWall2() {
+    player.addMessage("This is message no. 1");
+    player.addMessage("This is message no. 2");
+    List<String> wallContents = player.getMessageList();
 
+    assertThat( wallContents.size(), is(2));
+    assertThat( wallContents.get(0), containsString("[Mikkel] This is message no. 1"));
+    assertThat( wallContents.get(1), containsString("[Mikkel] This is message no. 2"));
+  }
+  
+  @Test
+  public void roomWallsShouldBeDifferent() {
+    player.addMessage("This is message no. 1");
+    player.move(Direction.NORTH);
+    player.addMessage("This is message no. 2");
+    
+    List<String> wallContents = player.getMessageList();
+
+    assertThat( wallContents.size(), is(1));
+    assertThat( wallContents.get(0), containsString("[Mikkel] This is message no. 2"));
+  }
+  
+  @Test
+  public void shouldWriteWithMultiplePlayers() {
+	  
+	Login loginResult2 = cave.login("mathilde_aarskort", "321");
+    Player player2 = loginResult2.getPlayer();  
+	  
+    player.addMessage("This is message no. 1");
+    player2.addMessage("This is message no. 2");
+    List<String> wallContents = player.getMessageList();
+
+    assertThat( wallContents.size(), is(2));
+    assertThat( wallContents.get(0), containsString("[Mikkel] This is message no. 1"));
+    assertThat( wallContents.get(1), containsString("[Mathilde] This is message no. 2"));
+  }
+  
+
+  @Test
+  public void shouldBeEmptyWall() {
+    List<String> wallContents = player.getMessageList();
+
+    assertThat( wallContents.size(), is(0));
+  }
 }

@@ -174,3 +174,11 @@ the inspector is meant for writing to something (maybe a file), so that it can b
 
 
 -------------------------------------------------------------------
+Exercise 'weather-client'
+
+server needed to handle the weather method key
+and call getWeather on the playerServant
+playerProxy call is like the getPosition
+
+
+-------------------------------------------------------------------

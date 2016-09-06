@@ -25,12 +25,15 @@ public class FakeCaveStorage implements CaveStorage {
   // The positionString is the primary key and the value object
   // for a room the rest of the tuple
   Map<String,RoomRecord> roomMap;
+  
+  Map<String,List<String>> wallMap;
 
   @Override
   public void initialize(ObjectManager objMgr, ServerConfiguration config) {
     this.serverConfiguration = config;
     roomMap = new HashMap<String, RoomRecord>();
     playerId2PlayerSpecs = new HashMap<String, PlayerRecord>(5);
+    wallMap = new HashMap<String, List<String>>();
 
     RoomRecord entryRoom = new RoomRecord(
         "You are standing at the end of a road before a small brick building.");
@@ -60,6 +63,7 @@ public class FakeCaveStorage implements CaveStorage {
     // if there is already a room, return false
     if ( roomMap.containsKey(positionString) ) { return false; }
     roomMap.put(positionString, newRoom);
+    wallMap.put(positionString, new ArrayList<String>());
     return true;
   }
 
@@ -77,6 +81,11 @@ public class FakeCaveStorage implements CaveStorage {
       }
     }
     return listOfExits;
+  }
+  
+  @Override
+  public List<String> getMessageList(String positionString) {
+	  return wallMap.get(positionString);
   }
 
   // === The table with primary key playerID whose columns are the
