@@ -182,3 +182,21 @@ playerProxy call is like the getPosition
 
 
 -------------------------------------------------------------------
+
+
+###################################################################
+Exercise 'image-classic'
+
+we run:
+docker run hello-world
+
+which validates the installation by contacting the hub.docker, downloading the image and starting the container 
+(Notes: BIOS should enable hyper-V and service is started on linux by running sudo service docker start)
+
+containers is browsed via 'docker ps -a' and is saved by running 'docker commit [container ID] [commit name]' which we choose to 'css-14-init'.
+
+Add entry-point.sh script, that you can invoke from outside off docker and choose role for container (daemon/cmd)
+
+Made containers run on same network, and talk together.
+-------------------------------------------------------------------
+
