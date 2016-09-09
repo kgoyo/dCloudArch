@@ -14,6 +14,7 @@ sky cave general
 	Point3 is a position object
 	.cpf files are used to determine which configurations to use, can set the abstractfactories
 	PlayerServant objects are created on login in the CaveServant
+	when running the cmd/daemon, the ordering of arguments are invalid
 
 
 ###################################################################
@@ -190,7 +191,7 @@ Exercise 'image-classic'
 we run:
 docker run hello-world
 
-which validates the installation by contacting the hub.docker, downloading the image and starting the container 
+which validates the installation by contacting the hub.docker, downloading the image and starting the container
 (Notes: BIOS should enable hyper-V and service is started on linux by running sudo service docker start)
 
 containers is browsed via 'docker ps -a' and is saved by running 'docker commit [container ID] [commit name]' which we choose to 'css-14-init'.
@@ -199,4 +200,13 @@ Add entry-point.sh script, that you can invoke from outside off docker and choos
 
 Made containers run on same network, and talk together.
 -------------------------------------------------------------------
+Exercise 'image-dockerfile'
 
+COPY doesnt dopy folders (just content recursivley), instead use ADD
+ENTRYPOINT should be in exec form
+CMD is optional, we can run the commands specififed in the exercise without it
+-------------------------------------------------------------------
+Exercise 'skycave-image'
+
+first run "docker login" to login to the hub.docker user (there is only this option for a provider)
+images must be tagged before commiting with "docker tag [image-id] [reponame:tagname]"
