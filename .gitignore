@@ -8,6 +8,9 @@ review.zip
 .idea/
 *.iml
 
+.classpath
+.project
+
 javadoc/
 build/
 lib/
