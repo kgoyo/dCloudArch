@@ -1,6 +1,11 @@
 # Ignore test results in build
 	TEST-RESULT/
+	build/
+	javadoc/
 
 # Ignore Git
 	.gitignore
 	.git/
+
+# Ignore Idea
+    .idea/

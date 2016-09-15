@@ -9,12 +9,11 @@ LABEL Description="This image is used to start SkyCave"
 ENV skycave /root/cave/
 WORKDIR ${skycave}
 
-RUN apt-get update
-
 # Copy the code base inside the container
 ADD . ${skycave}
 
-# Build and resolve
+# Build src, avoiding test files
+# OBS! the test files are always created when starting the container
 RUN ant build.src
 
 ENTRYPOINT ["/bin/bash", "./entry-point.sh"]
