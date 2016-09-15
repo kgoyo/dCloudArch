@@ -1,0 +1,6 @@
+# Ignore test results in build
+	TEST-RESULT/
+
+# Ignore Git
+	.gitignore
+	.git/

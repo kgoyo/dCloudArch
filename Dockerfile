@@ -1,16 +1,20 @@
-# Group css-14
+# SkyCave (Group css-14)
+#
+# Version 0.2
+
 FROM henrikbaerbak/cloudarch:e16.1
-RUN mkdir /root/cave
+MAINTAINER css-14
+LABEL Description="This image is used to start SkyCave"
+
 ENV skycave /root/cave/
 WORKDIR ${skycave}
 
 RUN apt-get update
 
-# Create dir for project and copy the code base inside the container
+# Copy the code base inside the container
 ADD . ${skycave}
-RUN cd ${skycave}
 
 # Build and resolve
-RUN ant build.all
+RUN ant build.src	#FIXME: Generates TEST-RESULT
 
 ENTRYPOINT ["/bin/bash", "./entry-point.sh"]
