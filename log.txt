@@ -202,9 +202,13 @@ Made containers run on same network, and talk together.
 -------------------------------------------------------------------
 Exercise 'image-dockerfile'
 
+WORKDIR creates dir and makes it the 'working directory'
 COPY doesnt dopy folders (just content recursivley), instead use ADD
-ENTRYPOINT should be in exec form
+ENTRYPOINT should be in exec form ["foo", "bar"]
 CMD is optional, we can run the commands specififed in the exercise without it
+
+The images should be as slim as possible, therefore no TEST-RESULTS should be present!
+Also consider if Build.src is overkill?
 -------------------------------------------------------------------
 Exercise 'skycave-image'
 

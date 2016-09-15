@@ -15,6 +15,6 @@ RUN apt-get update
 ADD . ${skycave}
 
 # Build and resolve
-RUN ant build.src	#FIXME: Generates TEST-RESULT
+RUN ant build.src
 
 ENTRYPOINT ["/bin/bash", "./entry-point.sh"]
