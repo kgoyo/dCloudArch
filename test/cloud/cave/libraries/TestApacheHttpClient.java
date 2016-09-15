@@ -1,12 +1,13 @@
 package cloud.cave.libraries;
 
+import cloud.cave.server.HttpRequester;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +24,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestApacheHttpClient {
     private CloseableHttpClient httpclient;
+    private String url = "http://skycave.baerbak.com:7654/api/v2/auth?loginName=201303609&password=Kappa123";
+    private String expected = "{\"success\":true,\"subscription\":{\"groupName\":\"css-14\",\"dateCreated\":\"2016-09-08 13:24 PM UTC\",\"playerName\":\"Graxor Destroyer of worlds\",\"loginName\":\"201303609\",\"region\":\"AARHUS\",\"groupToken\":\"Arsenic154_Nicaragua511\",\"playerID\":\"57d16692a7b11b000529fd35\"},\"message\":\"loginName 201303609 was authenticated\"}";
+
     @Before
     public void setup() {
         //
@@ -35,7 +39,6 @@ public class TestApacheHttpClient {
 
     @Test
     public void subscriptionServiceResponse () {
-        String url = "http://skycave.baerbak.com:7654/api/v2/auth?loginName=201303609&password=Kappa123";
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
 
@@ -49,15 +52,45 @@ public class TestApacheHttpClient {
             while((line = rd.readLine()) != null) {
                 result+=line;
             }
-           
-            String expected = "{\"success\":true,\"subscription\":{\"groupName\":\"css-14\",\"dateCreated\":\"2016-09-08 13:24 PM UTC\",\"playerName\":\"Graxor Destroyer of worlds\",\"loginName\":\"201303609\",\"region\":\"AARHUS\",\"groupToken\":\"Arsenic154_Nicaragua511\",\"playerID\":\"57d16692a7b11b000529fd35\"},\"message\":\"loginName 201303609 was authenticated\"}";
+
+             assertEquals( expected, result);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void subscriptionServiceResponseUsingMethod () {
+
+        try {
+            HttpResponse response = HttpRequester.getResponse(url);
+            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            String result = "";
+            String line = "";
+            while((line = rd.readLine()) != null) {
+                result+=line;
+            }
             assertEquals( expected, result);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    @Test
+    public void jsonToStringTest() {
+        String url2 = "http://skycave.baerbak.com:7654/api/v2/auth";
+        JSONObject expected = new JSONObject();
+        expected.put("success",false);
+        expected.put("message","loginName or password not given");
+        try {
+            JSONObject json = HttpRequester.responseContentToJSON(HttpRequester.getResponse(url2));
+            assertEquals(expected,json);
 
-        //expected return
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
     }
 }
