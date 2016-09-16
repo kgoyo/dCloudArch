@@ -214,3 +214,15 @@ Exercise 'skycave-image'
 
 first run "docker login" to login to the hub.docker user (there is only this option for a provider)
 images must be tagged before commiting with "docker tag [image-id] [reponame:tagname]"
+
+###################################################################
+
+-------------------------------------------------------------------
+Exercise 'subscription-service'
+
+we use the apache httpclient libraries to do http request, this was chosen because it is a very popular library.
+It is also on the top ten of used external libraries listed here http://blog.takipi.com/the-top-100-java-libraries-in-2016-after-analyzing-47251-dependencies/
+
+-------------------------------------------------------------------
+
+-------------------------------------------------------------------

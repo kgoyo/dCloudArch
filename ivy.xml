@@ -31,6 +31,18 @@
     <dependency org="org.mindrot" 
                 name="jbcrypt" 
                 rev="0.3m"/>
+
+    <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+    <dependency org="org.apache.httpcomponents"
+              name="httpclient"
+              rev="4.5.2"/>
+
+      <!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
+      <dependency org="commons-logging"
+                  name="commons-logging"
+                  rev="1.2"/>
+
+
   </dependencies>
 
 </ivy-module>
