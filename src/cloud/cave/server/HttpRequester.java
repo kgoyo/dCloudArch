@@ -26,7 +26,7 @@ public class HttpRequester {
         HttpGet request = new HttpGet(url);
         request.addHeader("User-Agent", USER_AGENT);
         return client.execute(request);
-    }
+    } //can throw other exception like: HttpHostConnectException, ...
 
     public static String responseContentToString(HttpResponse response) throws IOException {
         BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));

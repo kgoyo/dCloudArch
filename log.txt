@@ -223,6 +223,9 @@ Exercise 'subscription-service'
 we use the apache httpclient libraries to do http request, this was chosen because it is a very popular library.
 It is also on the top ten of used external libraries listed here http://blog.takipi.com/the-top-100-java-libraries-in-2016-after-analyzing-47251-dependencies/
 
+ServerConfgurations has a list of ServerData has contains the actual server information, this list seems to always have a size of 1
+
+we might need to add more error codes to the
 -------------------------------------------------------------------
 
 -------------------------------------------------------------------
