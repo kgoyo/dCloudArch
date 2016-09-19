@@ -2,8 +2,10 @@ package cloud.cave.server;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.params.HttpParams;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -22,9 +24,15 @@ public class HttpRequester {
      * @throws IOException
      */
     public static HttpResponse getResponse(String url) throws IOException {
+        //timeout example
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.addHeader("User-Agent", USER_AGENT);
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setSocketTimeout(5000) //time waiting for data
+                .setConnectTimeout(3000) //time to establish connection
+                .build();
+        request.setConfig(requestConfig);
         return client.execute(request);
     } //can throw other exception like: HttpHostConnectException, ...
 

@@ -225,7 +225,27 @@ It is also on the top ten of used external libraries listed here http://blog.tak
 
 ServerConfgurations has a list of ServerData has contains the actual server information, this list seems to always have a size of 1
 
-we might need to add more error codes to the
--------------------------------------------------------------------
+in the .cpf files server addresses should not have "http://" prefix, but it MUST be added in the code later when we do the request
 
+we might need to add more error codes to the code
+
+if server error -> return null
 -------------------------------------------------------------------
+Exercise 'weather-service'
+
+cant test the default case in our StandardWeatherService formatRegion method
+
+timeout is default 60-70 seconds, read timeout is default infinity
+
+maybe we dont need to pull out the values and put into a new JSONObject
+-------------------------------------------------------------------
+Exercise 'weather-timeout'
+
+maybe redo HttpRequester so that it's an object we can get from objectmanager
+
+Httpclient timeout types (http://www.baeldung.com/httpclient-timeout):
+the Connection Timeout (http.connection.timeout) – the time to establish the connection with the remote host
+the Socket Timeout (http.socket.timeout) – the time waiting for data – after the connection was established; maximum time of inactivity between two data packets
+the Connection Manager Timeout (http.connection-manager.timeout) – the time to wait for a connection from the connection manager/pool
+
+dont know what "Increase availability using Nygard's 'Timeout' on the weather service integration point in the Player implementation." means
