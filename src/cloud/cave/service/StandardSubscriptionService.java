@@ -21,18 +21,20 @@ public class StandardSubscriptionService implements SubscriptionService {
     @Override
     public SubscriptionRecord lookup(String loginName, String password) {
         ServerData data = configuration.get(0);
-        String url = data.getHostName() + ":" + data.getPortNumber() + "/api/v2/auth?loginName=" + loginName + "&password=" + password;
+        String url = "http://" + data.getHostName() + ":" + data.getPortNumber() + "/api/v2/auth?loginName=" + loginName + "&password=" + password;
         System.out.println(url);
         JSONObject response = null;
         try {
             response = HttpRequester.responseContentToJSON(HttpRequester.getResponse(url));
 
         } catch (IOException e) {
-            //handle no connection
+            //exception occurred, due to server error
             e.printStackTrace();
+            return null;
         } catch (ParseException e) {
             //handle hostile service
             e.printStackTrace();
+            return null;
         }
         if (response != null) {
             if ((boolean) response.get("success")) {
@@ -48,8 +50,8 @@ public class StandardSubscriptionService implements SubscriptionService {
                 return new SubscriptionRecord( SubscriptionResult.LOGIN_NAME_OR_PASSWORD_IS_UNKNOWN );
             }
         }
-        //FIXME donnt know what to return here
-        return new SubscriptionRecord( SubscriptionResult.LOGIN_NAME_OR_PASSWORD_IS_UNKNOWN );
+        //should never happen, already handled by exceptions
+        return null;
     }
 
     @Override
