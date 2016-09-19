@@ -18,7 +18,7 @@ public class TestSubscription {
     @Before
     public void setup() {
         subscriptionService = new StandardSubscriptionService();
-        ServerConfiguration config = new ServerConfiguration("http://skycave.baerbak.com",7654);
+        ServerConfiguration config = new ServerConfiguration("skycave.baerbak.com",7654);
         subscriptionService.initialize(null,config);
     }
 
