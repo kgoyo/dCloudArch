@@ -12,7 +12,7 @@ SKYCAVE_APPSERVER = localhost:37123
 
 # = Subscription service 
 SKYCAVE_SUBSCRIPTION_IMPLEMENTATION = cloud.cave.service.StandardSubscriptionService
-SKYCAVE_SUBSCRIPTIONSERVER = skycave.baerbak.com/:7654
+SKYCAVE_SUBSCRIPTIONSERVER = skycave.baerbak.com:7654
 
 # = Cave storage
 SKYCAVE_CAVESTORAGE_IMPLEMENTATION = cloud.cave.doubles.FakeCaveStorage
