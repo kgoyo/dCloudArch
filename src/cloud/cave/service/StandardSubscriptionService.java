@@ -29,11 +29,9 @@ public class StandardSubscriptionService implements SubscriptionService {
 
         } catch (IOException e) {
             //exception occurred, due to server error
-            e.printStackTrace();
             return null;
         } catch (ParseException e) {
             //handle hostile service
-            e.printStackTrace();
             return null;
         }
         if (response != null) {
