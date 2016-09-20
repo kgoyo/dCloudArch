@@ -4,6 +4,7 @@ import cloud.cave.common.Inspector;
 import cloud.cave.config.ObjectManager;
 import cloud.cave.domain.Region;
 import cloud.cave.server.HttpRequester;
+import cloud.cave.server.Requester;
 import cloud.cave.server.common.ServerConfiguration;
 import cloud.cave.server.common.ServerData;
 import org.apache.http.NoHttpResponseException;
@@ -22,6 +23,15 @@ public class StandardWeatherService implements WeatherService {
     private ServerConfiguration configuration;
     private ObjectManager objectManager;
     private Inspector inspector;
+    private Requester http;
+
+    public StandardWeatherService() {
+        http = new HttpRequester(3000,5000);
+    }
+
+    public StandardWeatherService(Requester req) {
+        http = req;
+    }
 
     @Override
     public JSONObject requestWeather(String groupName, String playerID, Region region) {
@@ -34,7 +44,7 @@ public class StandardWeatherService implements WeatherService {
         JSONObject weather = new JSONObject();
 
         try {
-            response = HttpRequester.responseContentToJSON(HttpRequester.getResponse(url));
+            response = http.responseContentToJSON(http.getResponse(url));
 
         } catch (SocketTimeoutException | ConnectTimeoutException e) {
             weather.put("authenticated","false");

@@ -17,6 +17,7 @@ import java.io.IOException;
  */
 public class StandardSubscriptionService implements SubscriptionService {
     private ServerConfiguration configuration;
+    private HttpRequester http;
 
     @Override
     public SubscriptionRecord lookup(String loginName, String password) {
@@ -25,7 +26,7 @@ public class StandardSubscriptionService implements SubscriptionService {
         System.out.println(url);
         JSONObject response = null;
         try {
-            response = HttpRequester.responseContentToJSON(HttpRequester.getResponse(url));
+            response = http.responseContentToJSON(http.getResponse(url));
 
         } catch (IOException e) {
             //exception occurred, due to server error
@@ -60,6 +61,7 @@ public class StandardSubscriptionService implements SubscriptionService {
     @Override
     public void initialize(ObjectManager objMgr, ServerConfiguration config) {
         this.configuration = config;
+        http = new HttpRequester(3000,8000);
     }
 
     @Override

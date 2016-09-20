@@ -63,7 +63,8 @@ public class TestApacheHttpClient {
     public void subscriptionServiceResponseUsingMethod () {
 
         try {
-            HttpResponse response = HttpRequester.getResponse(url);
+            HttpRequester http = new HttpRequester(3000,8000);
+            HttpResponse response = http.getResponse(url);
             BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             String result = "";
             String line = "";
@@ -82,8 +83,9 @@ public class TestApacheHttpClient {
         JSONObject expected = new JSONObject();
         expected.put("success",false);
         expected.put("message","loginName or password not given");
+        HttpRequester http = new HttpRequester(3000,8000);
         try {
-            JSONObject json = HttpRequester.responseContentToJSON(HttpRequester.getResponse(url2));
+            JSONObject json = http.responseContentToJSON(http.getResponse(url2));
             assertEquals(expected,json);
 
         } catch (IOException e) {

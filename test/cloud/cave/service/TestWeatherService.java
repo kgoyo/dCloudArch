@@ -5,6 +5,7 @@ import cloud.cave.config.ObjectManager;
 import cloud.cave.config.StandardObjectManager;
 import cloud.cave.domain.Region;
 import cloud.cave.doubles.AllTestDoubleFactory;
+import cloud.cave.doubles.ExceptionHttpRequester;
 import cloud.cave.doubles.NullObjectManager;
 import cloud.cave.server.common.ServerConfiguration;
 import org.apache.http.HttpResponse;
@@ -12,6 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.execchain.RequestAbortedException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.Before;
@@ -19,6 +21,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -75,5 +78,25 @@ public class TestWeatherService {
         assertEquals("*** Weather service not available, sorry. Connection timeout. Try again later. ***",response.get("errorMessage"));
         long actualTime = java.lang.System.currentTimeMillis();
         assertTrue(time + 3000 <= actualTime && time + 3500 > actualTime);
+    }
+
+    @Test
+    public void testNoResponseHandling() {
+        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new RequestAbortedException("")));
+        ServerConfiguration config = new ServerConfiguration("", 0);
+        weatherService.initialize(manager, config);
+        JSONObject response = weatherService.requestWeather("","", Region.AALBORG);
+        assertEquals("false",response.get("authenticated"));
+        assertEquals("*** Weather service not available, sorry. Slow response. Try again later. ***",response.get("errorMessage"));
+    }
+
+    @Test
+    public void testTimeOuteHandling() {
+        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new SocketTimeoutException("")));
+        ServerConfiguration config = new ServerConfiguration("", 0);
+        weatherService.initialize(manager, config);
+        JSONObject response = weatherService.requestWeather("","", Region.AALBORG);
+        assertEquals("false",response.get("authenticated"));
+        assertEquals("*** Weather service not available, sorry. Connection timeout. Try again later. ***",response.get("errorMessage"));
     }
 }
