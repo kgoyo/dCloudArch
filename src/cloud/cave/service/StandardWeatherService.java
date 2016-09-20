@@ -32,24 +32,32 @@ public class StandardWeatherService implements WeatherService {
             response = HttpRequester.responseContentToJSON(HttpRequester.getResponse(url));
 
         } catch (NoHttpResponseException e) {
+            weather.put("authenticated","false");
             weather.put("errorMessage","Weather service is not available, sorry. Slow response. Try again later.");
             return weather;
         } catch (ConnectTimeoutException e) {
+            weather.put("authenticated","false");
             weather.put("errorMessage","Weather service is not available, sorry. Connection timeout. Try again later.");
             return weather;
         } catch (IOException e) {
             //exception occurred, due to server error
+            weather.put("authenticated","false");
             weather.put("errorMessage","Weather service is not available, sorry. Try again later.");
             return weather;
         } catch (ParseException e) {
             //handle hostile service
+            weather.put("authenticated","false");
             weather.put("errorMessage","Weather service response is malformed, sorry. Try again later.");
-            return null;
+            return weather;
         }
 
         if (response != null) {
+            //weather = response;
+
             if ((boolean) response.get("authenticated")) {
+
                 //server returned successful login
+
                 weather.put("authenticated",(boolean) response.get("authenticated") + "");
                 weather.put("errorMessage", (String) response.get("errorMessage"));
 
@@ -61,6 +69,7 @@ public class StandardWeatherService implements WeatherService {
                 weather.put("time", (String) response.get("time"));
 
             } else {
+                weather.put("authenticated","false");
                 weather.put("errorMessage", (String) response.get("errorMessage"));
             }
         }
