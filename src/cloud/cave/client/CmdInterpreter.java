@@ -160,17 +160,9 @@ public class CmdInterpreter {
 
     } else if (command.equals("read")) {
       List<String> wall = player.getMessageList();
-      String res = "";
-      if (wall.size() == 0) {
-    	  res = "the wall is empty";
-      } else {
-	      for (String s : wall) {
-	    	  res += s +" ";
-	      }
-	      res = res.substring(0, res.length()-1);
+      for (String s : wall) {
+          systemOut.println(s);
       }
-      
-      systemOut.println(res);
 
     } else if (command.equals("sys")) {
       systemOut.println("System information:");
