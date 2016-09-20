@@ -8,6 +8,7 @@ import cloud.cave.server.common.ServerConfiguration;
 import cloud.cave.server.common.ServerData;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.impl.execchain.RequestAbortedException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
@@ -35,12 +36,12 @@ public class StandardWeatherService implements WeatherService {
         try {
             response = HttpRequester.responseContentToJSON(HttpRequester.getResponse(url));
 
-        } catch (SocketTimeoutException e) {
+        } catch (SocketTimeoutException | ConnectTimeoutException e) {
             weather.put("authenticated","false");
             weather.put("errorMessage","*** Weather service not available, sorry. Connection timeout. Try again later. ***");
             inspector.write(Inspector.WEATHER_TIMEOUT_TOPIC, "Weather timeout: Connection");
             return weather;
-        } catch (ConnectTimeoutException e) {
+        } catch (RequestAbortedException e) {
             weather.put("authenticated","false");
             weather.put("errorMessage","*** Weather service not available, sorry. Slow response. Try again later. ***");
             inspector.write(Inspector.WEATHER_TIMEOUT_TOPIC, "Weather timeout: Slow response");

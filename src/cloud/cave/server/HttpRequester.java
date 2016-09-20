@@ -13,6 +13,8 @@ import org.json.simple.parser.ParseException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static org.apache.http.HttpHeaders.USER_AGENT;
 
@@ -25,15 +27,30 @@ public class HttpRequester {
      */
     public static HttpResponse getResponse(String url) throws IOException {
         //timeout example
+        HttpResponse response;
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.addHeader("User-Agent", USER_AGENT);
         RequestConfig requestConfig = RequestConfig.custom()
-                .setSocketTimeout(5000) //time before SocketTimeoutException
+                .setSocketTimeout(3000) //time before SocketTimeoutException
                 .setConnectTimeout(3000) //time before ConnectTimeoutException
                 .build();
         request.setConfig(requestConfig);
-        return client.execute(request);
+
+        //time before slow response
+        long slowResponseTime = 8000;
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                if (request != null) {
+                    request.abort();
+                }
+            }
+        };
+        new Timer(true).schedule(task, slowResponseTime);
+
+        response = client.execute(request);
+        return response;
     } //can throw other exception like: HttpHostConnectException, ...
 
     public static String responseContentToString(HttpResponse response) throws IOException {

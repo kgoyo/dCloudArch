@@ -7,11 +7,22 @@ import cloud.cave.domain.Region;
 import cloud.cave.doubles.AllTestDoubleFactory;
 import cloud.cave.doubles.NullObjectManager;
 import cloud.cave.server.common.ServerConfiguration;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static org.apache.http.HttpHeaders.USER_AGENT;
 import static org.junit.Assert.*;
 
 /**
@@ -61,7 +72,7 @@ public class TestWeatherService {
         long time = java.lang.System.currentTimeMillis();
         JSONObject response = weatherService.requestWeather("css-14","57d16692a7b11b000529fd35", Region.AALBORG);
         assertEquals("false",response.get("authenticated"));
-        assertEquals("*** Weather service not available, sorry. Slow response. Try again later. ***",response.get("errorMessage"));
+        assertEquals("*** Weather service not available, sorry. Connection timeout. Try again later. ***",response.get("errorMessage"));
         long actualTime = java.lang.System.currentTimeMillis();
         assertTrue(time + 3000 <= actualTime && time + 3500 > actualTime);
     }
