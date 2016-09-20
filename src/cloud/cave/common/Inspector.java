@@ -27,6 +27,7 @@ import cloud.cave.service.ExternalService;
 public interface Inspector extends ExternalService {
   public static final String CFG_TOPIC = "cfg";
   public static final String IPC_TOPIC = "ipc";
+  public static final String WEATHER_TIMEOUT_TOPIC = "weather-timeout";
 
   /**
    * Write a log entry into the inspector log for given topic

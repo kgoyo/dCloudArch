@@ -1,5 +1,6 @@
 package cloud.cave.service;
 
+import cloud.cave.common.Inspector;
 import cloud.cave.config.ObjectManager;
 import cloud.cave.domain.Region;
 import cloud.cave.server.HttpRequester;
@@ -17,6 +18,8 @@ import java.io.IOException;
  */
 public class StandardWeatherService implements WeatherService {
     private ServerConfiguration configuration;
+    private ObjectManager objectManager;
+    private Inspector inspector;
 
     @Override
     public JSONObject requestWeather(String groupName, String playerID, Region region) {
@@ -33,11 +36,13 @@ public class StandardWeatherService implements WeatherService {
 
         } catch (NoHttpResponseException e) {
             weather.put("authenticated","false");
-            weather.put("errorMessage","Weather service is not available, sorry. Slow response. Try again later.");
+            weather.put("errorMessage","*** Weather service not available, sorry. Slow response. Try again later. ***");
+            //inspector.write(Inspector.WEATHER_TIMEOUT_TOPIC, "Weather timeout: Slow response");
             return weather;
         } catch (ConnectTimeoutException e) {
             weather.put("authenticated","false");
-            weather.put("errorMessage","Weather service is not available, sorry. Connection timeout. Try again later.");
+            weather.put("errorMessage","*** Weather service not available, sorry. Connection timeout. Try again later. ***");
+            //inspector.write(Inspector.WEATHER_TIMEOUT_TOPIC, "Weather timeout: Connection");
             return weather;
         } catch (IOException e) {
             //exception occurred, due to server error
@@ -99,6 +104,8 @@ public class StandardWeatherService implements WeatherService {
     @Override
     public void initialize(ObjectManager objMgr, ServerConfiguration config) {
         this.configuration = config;
+        objectManager = objMgr;
+        inspector = objectManager.getInspector();
     }
 
     @Override
