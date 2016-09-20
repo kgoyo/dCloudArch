@@ -37,13 +37,13 @@ public class StandardWeatherService implements WeatherService {
 
         } catch (SocketTimeoutException e) {
             weather.put("authenticated","false");
-            weather.put("errorMessage","*** Weather service not available, sorry. Slow response. Try again later. ***");
-            //inspector.write(Inspector.WEATHER_TIMEOUT_TOPIC, "Weather timeout: Slow response");
+            weather.put("errorMessage","*** Weather service not available, sorry. Connection timeout. Try again later. ***");
+            inspector.write(Inspector.WEATHER_TIMEOUT_TOPIC, "Weather timeout: Connection");
             return weather;
         } catch (ConnectTimeoutException e) {
             weather.put("authenticated","false");
-            weather.put("errorMessage","*** Weather service not available, sorry. Connection timeout. Try again later. ***");
-            //inspector.write(Inspector.WEATHER_TIMEOUT_TOPIC, "Weather timeout: Connection");
+            weather.put("errorMessage","*** Weather service not available, sorry. Slow response. Try again later. ***");
+            inspector.write(Inspector.WEATHER_TIMEOUT_TOPIC, "Weather timeout: Slow response");
             return weather;
         } catch (IOException e) {
             //exception occurred, due to server error

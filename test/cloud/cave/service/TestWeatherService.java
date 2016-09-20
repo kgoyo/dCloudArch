@@ -61,7 +61,7 @@ public class TestWeatherService {
         long time = java.lang.System.currentTimeMillis();
         JSONObject response = weatherService.requestWeather("css-14","57d16692a7b11b000529fd35", Region.AALBORG);
         assertEquals("false",response.get("authenticated"));
-        assertEquals("*** Weather service not available, sorry. Connection timeout. Try again later. ***",response.get("errorMessage"));
+        assertEquals("*** Weather service not available, sorry. Slow response. Try again later. ***",response.get("errorMessage"));
         long actualTime = java.lang.System.currentTimeMillis();
         assertTrue(time + 3000 <= actualTime && time + 3500 > actualTime);
     }

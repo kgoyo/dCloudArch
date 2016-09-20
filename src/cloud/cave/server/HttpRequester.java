@@ -29,8 +29,8 @@ public class HttpRequester {
         HttpGet request = new HttpGet(url);
         request.addHeader("User-Agent", USER_AGENT);
         RequestConfig requestConfig = RequestConfig.custom()
-                .setSocketTimeout(5000) //time waiting for data
-                .setConnectTimeout(3000) //time to establish connection
+                .setSocketTimeout(5000) //time before SocketTimeoutException
+                .setConnectTimeout(3000) //time before ConnectTimeoutException
                 .build();
         request.setConfig(requestConfig);
         return client.execute(request);
