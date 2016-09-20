@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 /**
  * Created by amao on 9/19/16.
@@ -34,7 +35,7 @@ public class StandardWeatherService implements WeatherService {
         try {
             response = HttpRequester.responseContentToJSON(HttpRequester.getResponse(url));
 
-        } catch (NoHttpResponseException e) {
+        } catch (SocketTimeoutException e) {
             weather.put("authenticated","false");
             weather.put("errorMessage","*** Weather service not available, sorry. Slow response. Try again later. ***");
             //inspector.write(Inspector.WEATHER_TIMEOUT_TOPIC, "Weather timeout: Slow response");
