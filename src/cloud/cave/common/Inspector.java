@@ -1,6 +1,7 @@
 package cloud.cave.common;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import cloud.cave.service.ExternalService;
 
@@ -28,6 +29,7 @@ public interface Inspector extends ExternalService {
   public static final String CFG_TOPIC = "cfg";
   public static final String IPC_TOPIC = "ipc";
   public static final String WEATHER_TIMEOUT_TOPIC = "weather-timeout";
+  public static final String WEATHER_CIRCUIT_BREAKER_TOPIC = "weather-circuit-breaker";
 
   /**
    * Write a log entry into the inspector log for given topic

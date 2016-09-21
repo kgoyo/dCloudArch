@@ -3,12 +3,15 @@ package cloud.cave.service;
 import cloud.cave.common.Inspector;
 import cloud.cave.config.ObjectManager;
 import cloud.cave.domain.Region;
+import cloud.cave.server.CircuitBreaker;
 import cloud.cave.server.HttpRequester;
 import cloud.cave.server.Requester;
+import cloud.cave.server.StandardCircuitBreaker;
 import cloud.cave.server.common.ServerConfiguration;
 import cloud.cave.server.common.ServerData;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.execchain.RequestAbortedException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -24,12 +27,28 @@ public class StandardWeatherService implements WeatherService {
     private ObjectManager objectManager;
     private Inspector inspector;
     private Requester http;
+    private StandardCircuitBreaker circuitBreaker;
+    private final int timeToHalf;
+    private final int failSpacing;
+    private final int timeoutTime = 3000;
+    private final int slowResponseTime = 8000;
+
 
     public StandardWeatherService() {
-        http = new HttpRequester(3000,5000);
+        timeToHalf = 20000;
+        failSpacing = 8000;
+        http = new HttpRequester(timeoutTime,slowResponseTime);
     }
 
-    public StandardWeatherService(Requester req) {
+    /**
+     * Should only be used for test purpose!
+     * @param req
+     * @param timeToHalf
+     * @param failSpacing
+     */
+    public StandardWeatherService(Requester req, int timeToHalf, int failSpacing) {
+        this.timeToHalf = timeToHalf;
+        this.failSpacing = failSpacing;
         http = req;
     }
 
@@ -44,27 +63,48 @@ public class StandardWeatherService implements WeatherService {
         JSONObject weather = new JSONObject();
 
         try {
+            CircuitBreaker.State curentState = circuitBreaker.getState();
+            if ( curentState == CircuitBreaker.State.OPEN) {
+                throw new IOException("Open Circuit");
+            }
+
             response = http.responseContentToJSON(http.getResponse(url));
 
         } catch (SocketTimeoutException | ConnectTimeoutException e) {
             weather.put("authenticated","false");
             weather.put("errorMessage","*** Weather service not available, sorry. Connection timeout. Try again later. ***");
             inspector.write(Inspector.WEATHER_TIMEOUT_TOPIC, "Weather timeout: Connection");
+
+            //connection failed, increment count by one on circuitbreaker
+            circuitBreaker.increment();
+
             return weather;
-        } catch (RequestAbortedException e) {
+        } catch (RequestAbortedException | HttpHostConnectException e) {
             weather.put("authenticated","false");
             weather.put("errorMessage","*** Weather service not available, sorry. Slow response. Try again later. ***");
             inspector.write(Inspector.WEATHER_TIMEOUT_TOPIC, "Weather timeout: Slow response");
+
+            //connection failed, increment count by one on circuitbreaker
+            circuitBreaker.increment();
+
             return weather;
         } catch (IOException e) {
             //exception occurred, due to server error
             weather.put("authenticated","false");
-            weather.put("errorMessage","Weather service is not available, sorry. Try again later.");
+            weather.put("errorMessage","*** Weather service is not available, sorry. " + circuitBreaker.stateToString() + " ***");
+            System.out.println(e.getClass().getCanonicalName() + ":" + http.getClass().getCanonicalName());
+            //connection failed, increment count by one on circuitbreaker
+            circuitBreaker.increment();
+
             return weather;
         } catch (ParseException e) {
             //handle hostile service
             weather.put("authenticated","false");
             weather.put("errorMessage","Weather service response is malformed, sorry. Try again later.");
+
+            //connection failed, increment count by one on circuitbreaker
+            circuitBreaker.increment();
+
             return weather;
         }
 
@@ -85,9 +125,14 @@ public class StandardWeatherService implements WeatherService {
                 weather.put("feelslike", (String) response.get("feelslike"));
                 weather.put("time", (String) response.get("time"));
 
+                //connection successful, reset count to 0 on circuitbreaker
+                circuitBreaker.reset();
             } else {
                 weather.put("authenticated","false");
                 weather.put("errorMessage", (String) response.get("errorMessage"));
+
+                //connection failed, increment count by one on circuitbreaker
+                circuitBreaker.increment();
             }
         }
         return weather;
@@ -118,6 +163,7 @@ public class StandardWeatherService implements WeatherService {
         this.configuration = config;
         objectManager = objMgr;
         inspector = objectManager.getInspector();
+        circuitBreaker = new StandardCircuitBreaker(timeToHalf, failSpacing, inspector);
     }
 
     @Override

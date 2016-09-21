@@ -1,5 +1,6 @@
 package cloud.cave.server;
 
+import cloud.cave.doubles.NullInspector;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public class TestCircuitBreaker {
     public void setup() {
         timetoHalf = 200;
         timeBetweenFails = 100;
-        cb = new StandardCircuitBreaker(timetoHalf,timeBetweenFails);
+        cb = new StandardCircuitBreaker(timetoHalf,timeBetweenFails, new NullInspector());
     }
 
     private void sleep(long time) {

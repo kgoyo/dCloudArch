@@ -7,6 +7,8 @@ import cloud.cave.domain.Region;
 import cloud.cave.doubles.AllTestDoubleFactory;
 import cloud.cave.doubles.ExceptionHttpRequester;
 import cloud.cave.doubles.NullObjectManager;
+import cloud.cave.server.HttpRequester;
+import cloud.cave.server.Requester;
 import cloud.cave.server.common.ServerConfiguration;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -22,10 +24,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import static org.apache.http.HttpHeaders.USER_AGENT;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 /**
@@ -38,6 +38,15 @@ public class TestWeatherService {
     @Before
     public void setup() {
         manager = new StandardObjectManager(new AllTestDoubleFactory());
+    }
+
+
+    private void sleep(long time) {
+        try {
+            Thread.sleep(time + 1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -82,7 +91,7 @@ public class TestWeatherService {
 
     @Test
     public void testNoResponseHandling() {
-        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new RequestAbortedException("")));
+        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new RequestAbortedException("")),0,0);
         ServerConfiguration config = new ServerConfiguration("", 0);
         weatherService.initialize(manager, config);
         JSONObject response = weatherService.requestWeather("","", Region.AALBORG);
@@ -92,11 +101,80 @@ public class TestWeatherService {
 
     @Test
     public void testTimeOuteHandling() {
-        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new SocketTimeoutException("")));
+        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new SocketTimeoutException("")),0,0);
         ServerConfiguration config = new ServerConfiguration("", 0);
         weatherService.initialize(manager, config);
         JSONObject response = weatherService.requestWeather("","", Region.AALBORG);
         assertEquals("false",response.get("authenticated"));
         assertEquals("*** Weather service not available, sorry. Connection timeout. Try again later. ***",response.get("errorMessage"));
+    }
+
+    @Test
+    public void testClosedToOpen() {
+        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new IOException("")),200,100);
+        ServerConfiguration config = new ServerConfiguration("", 0);
+        weatherService.initialize(manager, config);
+
+        JSONObject response = weatherService.requestWeather("","",Region.AARHUS);
+        assertThat((String) response.get("errorMessage"), containsString("Closed"));
+
+        response = weatherService.requestWeather("","",Region.AARHUS);
+        assertThat((String) response.get("errorMessage"), containsString("Closed"));
+
+        response = weatherService.requestWeather("","",Region.AARHUS);
+        assertThat((String) response.get("errorMessage"), containsString("Closed"));
+
+        response = weatherService.requestWeather("","",Region.AARHUS);
+        assertThat((String) response.get("errorMessage"), containsString("Open"));
+    }
+
+    @Test
+    public void testHalfOpenToOpen() {
+        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new IOException("")),200,100);
+        ServerConfiguration config = new ServerConfiguration("", 0);
+        weatherService.initialize(manager, config);
+
+        JSONObject response = weatherService.requestWeather("","",Region.AARHUS);
+        response = weatherService.requestWeather("","",Region.AARHUS);
+        response = weatherService.requestWeather("","",Region.AARHUS);
+        assertThat((String) response.get("errorMessage"), containsString("Closed"));
+
+        response = weatherService.requestWeather("","",Region.AARHUS);
+        assertThat((String) response.get("errorMessage"), containsString("(Open"));
+
+        sleep(200);
+
+        response = weatherService.requestWeather("","",Region.AARHUS);
+        assertThat((String) response.get("errorMessage"), containsString("HalfOpen"));
+
+        response = weatherService.requestWeather("","",Region.AARHUS);
+        assertThat((String) response.get("errorMessage"), containsString("(Open"));
+    }
+
+    @Test
+    public void testHalfOpenToClosed() {
+        Requester requester = new ExceptionHttpRequester(new IOException(""));
+        weatherService = new StandardWeatherService(requester,200,100);
+        ServerConfiguration config = new ServerConfiguration("", 0);
+        weatherService.initialize(manager, config);
+
+        JSONObject response = weatherService.requestWeather("","",Region.AARHUS);
+        response = weatherService.requestWeather("","",Region.AARHUS);
+        response = weatherService.requestWeather("","",Region.AARHUS);
+        assertThat((String) response.get("errorMessage"), containsString("Closed"));
+
+        response = weatherService.requestWeather("","",Region.AARHUS);
+        assertThat((String) response.get("errorMessage"), containsString("(Open"));
+
+        sleep(200);
+
+        response = weatherService.requestWeather("","",Region.AARHUS);
+        assertThat((String) response.get("errorMessage"), containsString("HalfOpen"));
+
+        requester = (new HttpRequester(20000,100));
+
+        response = weatherService.requestWeather("a","a",Region.AARHUS);
+
+        assertThat((String) response.get("errorMessage"), containsString("OK"));
     }
 }
