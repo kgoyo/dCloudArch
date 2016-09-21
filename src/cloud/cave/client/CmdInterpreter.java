@@ -3,6 +3,7 @@ package cloud.cave.client;
 import java.io.*;
 import java.util.List;
 
+import cloud.cave.common.PlayerDisconnectedException;
 import org.json.simple.*;
 
 import cloud.cave.broker.*;
@@ -73,12 +74,12 @@ public class CmdInterpreter {
    */
   public void readEvalLoop() {
     systemOut.println("\n== Welcome to SkyCave, player " + player.getName()
-        + " ==");
+            + " ==");
 
     BufferedReader bf = new BufferedReader(new InputStreamReader(systemIn));
 
     systemOut
-        .println("Entering command loop, type \"q\" to quit, \"h\" for help.");
+            .println("Entering command loop, type \"q\" to quit, \"h\" for help.");
 
     // and enter the command processing loop
     String line;
@@ -102,10 +103,13 @@ public class CmdInterpreter {
       } while (!line.equals("q"));
     } catch (PlayerSessionExpiredException exc) {
       systemOut
-          .println("**** Sorry! Another session has started with the same loginID. ***");
+              .println("**** Sorry! Another session has started with the same loginID. ***");
       systemOut
-          .println("**** You have been logged out.                                 ***");
+              .println("**** You have been logged out.                                 ***");
       System.exit(0);
+    } catch (PlayerDisconnectedException e) {
+      systemOut.println("*** Sorry - I cannot do that as I am disconnected from the cave, please quit ***");
+      //we disconnect here even though we shouldn't...
     } catch (IOException e) {
       systemOut.println("Exception caught: " + e);
     }

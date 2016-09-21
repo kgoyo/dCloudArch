@@ -2,6 +2,7 @@ package cloud.cave.client;
 
 import java.util.*;
 
+import cloud.cave.common.PlayerDisconnectedException;
 import org.json.simple.*;
 
 import cloud.cave.broker.*;
@@ -242,8 +243,10 @@ public class PlayerProxy implements Player, ClientProxy, Requestor {
     if ( statusCode.equals(StatusCode.SERVER_PLAYER_SESSION_EXPIRED_FAILURE) ) {
       String errMsg = replyJson.get(MarshalingKeys.ERROR_MSG_KEY).toString();
       throw new PlayerSessionExpiredException(errMsg);
+    } else if ( statusCode.equals(StatusCode.SERVER_FAILURE) ) {
+      String errMsg = replyJson.get(MarshalingKeys.ERROR_MSG_KEY).toString();
+      throw new PlayerDisconnectedException(errMsg);
     }
-
     return replyJson;
   }
 

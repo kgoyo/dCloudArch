@@ -48,6 +48,9 @@ public class SocketClientRequestHandler implements ClientRequestHandler {
           clientSocket.getInputStream()));
     } catch (UnknownHostException e) {
       e.printStackTrace();
+    } catch (ConnectException e) {
+      //handle getting disconnected
+      return Marshaling.createInvalidReplyWithExplanation(StatusCode.SERVER_FAILURE,"can't connect to server");
     } catch (IOException e) {
       e.printStackTrace();
     }
