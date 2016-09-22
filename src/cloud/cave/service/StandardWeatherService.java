@@ -70,7 +70,7 @@ public class StandardWeatherService implements WeatherService {
 
             response = http.responseContentToJSON(http.getResponse(url));
 
-        } catch (SocketTimeoutException | ConnectTimeoutException e) {
+        } catch (HttpHostConnectException | ConnectTimeoutException e) {
             weather.put("authenticated","false");
             weather.put("errorMessage","*** Weather service not available, sorry. Connection timeout. Try again later. ***");
             inspector.write(Inspector.WEATHER_TIMEOUT_TOPIC, "Weather timeout: Connection");
@@ -79,7 +79,7 @@ public class StandardWeatherService implements WeatherService {
             circuitBreaker.increment();
 
             return weather;
-        } catch (RequestAbortedException | HttpHostConnectException e) {
+        } catch (RequestAbortedException | SocketTimeoutException e) {
             weather.put("authenticated","false");
             weather.put("errorMessage","*** Weather service not available, sorry. Slow response. Try again later. ***");
             inspector.write(Inspector.WEATHER_TIMEOUT_TOPIC, "Weather timeout: Slow response");

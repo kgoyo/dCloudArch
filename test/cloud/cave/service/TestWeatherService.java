@@ -151,6 +151,7 @@ public class TestWeatherService {
         assertThat((String) response.get("errorMessage"), containsString("(Open"));
     }
 
+    @Ignore
     @Test
     public void testHalfOpenToClosed() {
         Requester requester = new ExceptionHttpRequester(new IOException(""));
