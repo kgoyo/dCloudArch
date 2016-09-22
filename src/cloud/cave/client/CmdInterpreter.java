@@ -86,19 +86,24 @@ public class CmdInterpreter {
     try {
       do {
         line = bf.readLine();
-        if (line.length() > 0) {
-          // split into into tokens on whitespace
-          String[] tokens = line.split("\\s");
+        try {
+          if (line.length() > 0) {
+            // split into into tokens on whitespace
+            String[] tokens = line.split("\\s");
 
-          // First handle the 'short hand' notation for movement
-          if (tokens[0].length() == 1) {
-            char primaryCommand = line.charAt(0);
-            handleSingleCharCommand(primaryCommand);
+            // First handle the 'short hand' notation for movement
+            if (tokens[0].length() == 1) {
+              char primaryCommand = line.charAt(0);
+              handleSingleCharCommand(primaryCommand);
 
-          } else {
-            handleMultipleCharCommand(tokens[0], tokens);
+            } else {
+              handleMultipleCharCommand(tokens[0], tokens);
+            }
+            systemOut.println();
           }
-          systemOut.println();
+        } catch (PlayerDisconnectedException e) {
+          systemOut.println("*** Sorry - I cannot do that as I am disconnected from the cave, please quit ***");
+          //we disconnect here even though we shouldn't...
         }
       } while (!line.equals("q"));
     } catch (PlayerSessionExpiredException exc) {
@@ -107,9 +112,6 @@ public class CmdInterpreter {
       systemOut
               .println("**** You have been logged out.                                 ***");
       System.exit(0);
-    } catch (PlayerDisconnectedException e) {
-      systemOut.println("*** Sorry - I cannot do that as I am disconnected from the cave, please quit ***");
-      //we disconnect here even though we shouldn't...
     } catch (IOException e) {
       systemOut.println("Exception caught: " + e);
     }

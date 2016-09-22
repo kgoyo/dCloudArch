@@ -249,3 +249,22 @@ the Socket Timeout (http.socket.timeout) – the time waiting for data – after
 the Connection Manager Timeout (http.connection-manager.timeout) – the time to wait for a connection from the connection manager/pool
 
 dont know what "Increase availability using Nygard's 'Timeout' on the weather service integration point in the Player implementation." means
+
+###################################################################
+Exercise 'mongo-storage'
+
+docker image is created from pulling it (docker pull mongo)
+
+database command format
+db.[collection name].[command]
+every document has a unique _id key
+
+find command without input returns everything
+
+update without $set overrides the document other keys and values
+update only updates the first it finds (using unique identifiers for the query is advised)
+
+mount host storage on vm:
+$ docker run --name some-mongo -v /my/own/datadir:/data/db -d mongo:tag
+
+-------------------------------------------------------------------
