@@ -14,6 +14,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.execchain.RequestAbortedException;
 import org.json.simple.JSONObject;
@@ -101,7 +102,7 @@ public class TestWeatherService {
 
     @Test
     public void testTimeOuteHandling() {
-        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new SocketTimeoutException("")),0,0);
+        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new HttpHostConnectException(null,null,null)),0,0);
         ServerConfiguration config = new ServerConfiguration("", 0);
         weatherService.initialize(manager, config);
         JSONObject response = weatherService.requestWeather("","", Region.AALBORG);
