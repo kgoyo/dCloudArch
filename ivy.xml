@@ -41,6 +41,10 @@
       <dependency org="commons-logging"
                   name="commons-logging"
                   rev="1.2"/>
+      <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
+      <dependency org="org.mongodb"
+                  name="mongo-java-driver"
+                  rev="3.3.0"/>
 
 
   </dependencies>
