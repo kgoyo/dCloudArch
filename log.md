@@ -1,10 +1,13 @@
-# Index:
-- [General](#general)
-- [iteration 0](#iteration-0)
-- [iteration 1](#iteration-1)
-- [iteration 2](#iteration-2)
-- [iteration 3](#iteration-3)
--------------------------------------------------------------------
+# Excercise Index:
+- [iteration 0: Understanding the SkyCave Architecture.](#iteration-0)
+- [iteration 1: Staging, and Operations in the Cloud using Docker. Integration Points.](#iteration-1)
+- [iteration 2: External Services and Stability Patterns.](#iteration-2)
+- [iteration 3: MongoDB and Redundancy.](#iteration-3)
+<!-- - [iteration 4: Scalability, Messaging, and Session Management.](#iteration-4) -->
+<!-- - [iteration 5: Performance.](#iteration-5) -->
+<!-- - [iteration 6: Exam Dry Run. Sharding.](#iteration-6) -->
+
+- - -
 # General
 
 ## ivy stuff
@@ -25,7 +28,7 @@
 
 -------------------------------------------------------------------
 # iteration 0
-## [Understanding the SkyCave Architecture](https://cs.au.dk/~baerbak/c/cloud/mandatory0.html)
+[Understanding the SkyCave Architecture](https://cs.au.dk/~baerbak/c/cloud/mandatory0.html)
 
 ## 'cave-architecture'
 
@@ -175,7 +178,7 @@ playerProxy call is like the getPosition
 
 -------------------------------------------------------------------
 # iteration 1
-## [Staging, and Operations in the Cloud using Docker. Integration Points.](https://cs.au.dk/~baerbak/c/cloud/mandatory1.html)
+[Staging, and Operations in the Cloud using Docker. Integration Points.](https://cs.au.dk/~baerbak/c/cloud/mandatory1.html)
 
 ## Exercise 'image-classic'
 
@@ -208,7 +211,7 @@ images must be tagged before commiting with "docker tag [image-id] [reponame:tag
 
 -------------------------------------------------------------------
 # iteration 2
-## [External Services and Stability Patterns](https://cs.au.dk/~baerbak/c/cloud/mandatory2.html)
+[External Services and Stability Patterns](https://cs.au.dk/~baerbak/c/cloud/mandatory2.html)
 
 ## Exercise 'subscription-service'
 
@@ -244,7 +247,7 @@ dont know what "Increase availability using Nygard's 'Timeout' on the weather se
 
 -------------------------------------------------------------------
 # iteration 3
-## [MongoDB and Redundancy](https://cs.au.dk/~baerbak/c/cloud/mandatory3.html)
+[MongoDB and Redundancy](https://cs.au.dk/~baerbak/c/cloud/mandatory3.html)
 
 ## Exercise 'mongo-storage'
 
