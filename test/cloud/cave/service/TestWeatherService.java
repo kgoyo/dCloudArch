@@ -1,5 +1,8 @@
 package cloud.cave.service;
 
+import cloud.cave.common.CaveCantConnectException;
+import cloud.cave.common.CaveSlowResponseException;
+import cloud.cave.common.CaveTimeOutException;
 import cloud.cave.config.CaveServerFactory;
 import cloud.cave.config.ObjectManager;
 import cloud.cave.config.StandardObjectManager;
@@ -33,7 +36,7 @@ import static org.junit.Assert.*;
  * Created by amao on 9/19/16.
  */
 public class TestWeatherService {
-    private StandardWeatherService weatherService;
+    private WeatherService weatherService;
     private ObjectManager manager;
 
     @Before
@@ -75,7 +78,7 @@ public class TestWeatherService {
 
     @Test
     public void testWeatherServiceTimeout() {
-        weatherService = new StandardWeatherService();
+        weatherService = new TimeOutWeatherServiceDecorator();
         //firewall times out request when invalid port is asked
         int timeoutPort = 6715;
         ServerConfiguration config = new ServerConfiguration("caveweather.baerbak.com", timeoutPort);
@@ -92,7 +95,7 @@ public class TestWeatherService {
 
     @Test
     public void testNoResponseHandling() {
-        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new RequestAbortedException("")),0,0);
+        weatherService = new TimeOutWeatherServiceDecorator(new StandardWeatherService(new ExceptionHttpRequester(new CaveSlowResponseException(""))));
         ServerConfiguration config = new ServerConfiguration("", 0);
         weatherService.initialize(manager, config);
         JSONObject response = weatherService.requestWeather("","", Region.AALBORG);
@@ -102,7 +105,7 @@ public class TestWeatherService {
 
     @Test
     public void testTimeOuteHandling() {
-        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new HttpHostConnectException(null,null,null)),0,0);
+        weatherService = new TimeOutWeatherServiceDecorator(new StandardWeatherService(new ExceptionHttpRequester(new CaveTimeOutException(""))));
         ServerConfiguration config = new ServerConfiguration("", 0);
         weatherService.initialize(manager, config);
         JSONObject response = weatherService.requestWeather("","", Region.AALBORG);
@@ -112,7 +115,8 @@ public class TestWeatherService {
 
     @Test
     public void testClosedToOpen() {
-        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new IOException("")),200,100);
+        weatherService = new CircuitBreakerWeatherServiceDecorator(new StandardWeatherService(new ExceptionHttpRequester(new CaveCantConnectException(""))),200,100);
+        //weatherService = new StandardWeatherService(new ExceptionHttpRequester(new CaveCantConnectException("")),200,100);
         ServerConfiguration config = new ServerConfiguration("", 0);
         weatherService.initialize(manager, config);
 
@@ -131,7 +135,7 @@ public class TestWeatherService {
 
     @Test
     public void testHalfOpenToOpen() {
-        weatherService = new StandardWeatherService(new ExceptionHttpRequester(new IOException("")),200,100);
+        weatherService = new CircuitBreakerWeatherServiceDecorator(new StandardWeatherService(new ExceptionHttpRequester(new CaveCantConnectException(""))),200,100);
         ServerConfiguration config = new ServerConfiguration("", 0);
         weatherService.initialize(manager, config);
 
@@ -155,7 +159,8 @@ public class TestWeatherService {
     @Ignore
     @Test
     public void testHalfOpenToClosed() {
-        Requester requester = new ExceptionHttpRequester(new IOException(""));
+        /*
+        Requester requester = new ExceptionHttpRequester(new CaveCantConnectException(""));
         weatherService = new StandardWeatherService(requester,200,100);
         ServerConfiguration config = new ServerConfiguration("", 0);
         weatherService.initialize(manager, config);
@@ -178,5 +183,6 @@ public class TestWeatherService {
         response = weatherService.requestWeather("a","a",Region.AARHUS);
 
         assertThat((String) response.get("errorMessage"), containsString("OK"));
+        */
     }
 }

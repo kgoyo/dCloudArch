@@ -1,5 +1,6 @@
 package cloud.cave.doubles;
 
+import cloud.cave.common.CaveException;
 import cloud.cave.server.Requester;
 import org.apache.http.HttpResponse;
 import org.json.simple.JSONObject;
@@ -11,9 +12,9 @@ import java.io.IOException;
  */
 public class ExceptionHttpRequester implements Requester {
 
-    private IOException e;
+    private CaveException e;
 
-    public ExceptionHttpRequester(IOException e) {
+    public ExceptionHttpRequester(CaveException e) {
         this.e = e;
     }
 
