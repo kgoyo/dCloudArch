@@ -3,9 +3,9 @@
 - [iteration 1: Staging, and Operations in the Cloud using Docker. Integration Points.](#iteration-1)
 - [iteration 2: External Services and Stability Patterns.](#iteration-2)
 - [iteration 3: MongoDB and Redundancy.](#iteration-3)
-<!-- - [iteration 4: Scalability, Messaging, and Session Management.](#iteration-4) -->
-<!-- - [iteration 5: Performance.](#iteration-5) -->
-<!-- - [iteration 6: Exam Dry Run. Sharding.](#iteration-6) -->
+- [iteration 4: Scalability, Messaging, and Session Management.](#iteration-4)
+- [iteration 5: Performance.](#iteration-5)
+- [iteration 6: Exam Dry Run. Sharding.](#iteration-6)
 
 - - -
 # General
