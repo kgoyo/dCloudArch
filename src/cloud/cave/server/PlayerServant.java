@@ -146,10 +146,17 @@ public class PlayerServant implements Player {
 
   @Override
   public String getWeather() {
-    JSONObject weatherAsJson = 
-        objectManager.
-        getWeatherService().
-        requestWeather(getGroupName(), getID(), getRegion());
+    JSONObject weatherAsJson;
+    try {
+      weatherAsJson =
+              objectManager.
+                      getWeatherService().
+                      requestWeather(getGroupName(), getID(), getRegion());
+    } catch (CaveCantConnectException e) {
+      weatherAsJson = new JSONObject();
+      weatherAsJson.put("authenticated","false");
+      weatherAsJson.put("errorMessage","*** Weather service is not available, sorry. ***");
+    }
     String weather = convertToFormattedString(weatherAsJson);
     return weather;
   }

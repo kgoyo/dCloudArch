@@ -59,19 +59,19 @@ public class TestWeatherService {
         ServerConfiguration config = new ServerConfiguration("caveweather.baerbak.com", 6745);
         weatherService.initialize(manager, config);
 
-        JSONObject response = weatherService.requestWeather("css-14","57d16692a7b11b000529fd35", Region.AALBORG);
+        JSONObject response = weatherService.requestWeather("css-14","57d165d6a7b11b000529fd23", Region.AARHUS);
         assertEquals("true",response.get("authenticated"));
         assertEquals("OK",response.get("errorMessage"));
 
-        response = weatherService.requestWeather("css-14","57d16692a7b11b000529fd35", Region.AARHUS);
+        response = weatherService.requestWeather("css-14","57d165d6a7b11b000529fd23", Region.AALBORG);
         assertEquals("true",response.get("authenticated"));
         assertEquals("OK",response.get("errorMessage"));
 
-        response = weatherService.requestWeather("css-14","57d16692a7b11b000529fd35", Region.COPENHAGEN);
+        response = weatherService.requestWeather("css-14","57d165d6a7b11b000529fd23", Region.COPENHAGEN);
         assertEquals("true",response.get("authenticated"));
         assertEquals("OK",response.get("errorMessage"));
 
-        response = weatherService.requestWeather("css-14","57d16692a7b11b000529fd35", Region.ODENSE);
+        response = weatherService.requestWeather("css-14","57d165d6a7b11b000529fd23", Region.ODENSE);
         assertEquals("true",response.get("authenticated"));
         assertEquals("OK",response.get("errorMessage"));
     }
@@ -156,18 +156,17 @@ public class TestWeatherService {
         assertThat((String) response.get("errorMessage"), containsString("(Open"));
     }
 
-    @Ignore
     @Test
     public void testHalfOpenToClosed() {
-        /*
-        Requester requester = new ExceptionHttpRequester(new CaveCantConnectException(""));
-        weatherService = new StandardWeatherService(requester,200,100);
+
+        ExceptionHttpRequester requester = new ExceptionHttpRequester(new CaveCantConnectException(""));
+        weatherService = new CircuitBreakerWeatherServiceDecorator(new StandardWeatherService(requester),200,100);
         ServerConfiguration config = new ServerConfiguration("", 0);
         weatherService.initialize(manager, config);
 
+        weatherService.requestWeather("","",Region.AARHUS);
+        weatherService.requestWeather("","",Region.AARHUS);
         JSONObject response = weatherService.requestWeather("","",Region.AARHUS);
-        response = weatherService.requestWeather("","",Region.AARHUS);
-        response = weatherService.requestWeather("","",Region.AARHUS);
         assertThat((String) response.get("errorMessage"), containsString("Closed"));
 
         response = weatherService.requestWeather("","",Region.AARHUS);
@@ -175,14 +174,29 @@ public class TestWeatherService {
 
         sleep(200);
 
-        response = weatherService.requestWeather("","",Region.AARHUS);
-        assertThat((String) response.get("errorMessage"), containsString("HalfOpen"));
+        //if we do this we go to open again
+        //response = weatherService.requestWeather("","",Region.AARHUS);
+        //assertThat((String) response.get("errorMessage"), containsString("HalfOpen"));
 
-        requester = (new HttpRequester(20000,100));
+        requester.toggleEnabled();
 
         response = weatherService.requestWeather("a","a",Region.AARHUS);
 
-        assertThat((String) response.get("errorMessage"), containsString("OK"));
-        */
+        assertThat((String) response.get("errorMessage"), containsString("OK")); //closed
+
+    }
+
+    @Test
+    public void testFailSpacing() {
+        weatherService = new CircuitBreakerWeatherServiceDecorator(new StandardWeatherService(new ExceptionHttpRequester(new CaveCantConnectException(""))),200,100);
+        ServerConfiguration config = new ServerConfiguration("", 0);
+        weatherService.initialize(manager, config);
+
+        weatherService.requestWeather("","",Region.AARHUS);
+        weatherService.requestWeather("","",Region.AARHUS);
+        sleep(100);
+        weatherService.requestWeather("","",Region.AARHUS);
+        JSONObject response = weatherService.requestWeather("","",Region.AARHUS);
+        assertThat((String) response.get("errorMessage"), containsString("Closed"));
     }
 }
