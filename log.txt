@@ -267,4 +267,12 @@ update only updates the first it finds (using unique identifiers for the query i
 mount host storage on vm:
 $ docker run --name some-mongo -v /my/own/datadir:/data/db -d mongo:tag
 
+when starting the database, the name is given:
+mongo [database name] --[port] --[hostname]
+
+docker is not localhost
+
+com.mongodb.util.JSON
+can be used to go back and forth from BSON and JSON
+
 -------------------------------------------------------------------

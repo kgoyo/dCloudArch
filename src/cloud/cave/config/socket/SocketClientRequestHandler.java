@@ -22,6 +22,7 @@ public class SocketClientRequestHandler implements ClientRequestHandler {
   private String hostName;
   private PrintWriter out;
   private BufferedReader in;
+  private boolean disconnected = false;
   
   public SocketClientRequestHandler() {
     hostName = null;
@@ -38,7 +39,9 @@ public class SocketClientRequestHandler implements ClientRequestHandler {
   @Override
   public JSONObject sendRequestAndBlockUntilReply(JSONObject requestJson)
       throws CaveIPCException {
-
+  if (disconnected) {
+    return Marshaling.createInvalidReplyWithExplanation(StatusCode.SERVER_FAILURE,"can't connect to server");
+  }
     Socket clientSocket = null;
     // Create the socket to the host
     try {
@@ -50,6 +53,7 @@ public class SocketClientRequestHandler implements ClientRequestHandler {
       e.printStackTrace();
     } catch (ConnectException e) {
       //handle getting disconnected
+      disconnected = true;
       return Marshaling.createInvalidReplyWithExplanation(StatusCode.SERVER_FAILURE,"can't connect to server");
     } catch (IOException e) {
       e.printStackTrace();
