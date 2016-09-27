@@ -20,18 +20,18 @@ import static org.hamcrest.CoreMatchers.*;
  */
 public class TestStorage {
 
-  private CaveStorage storage;
+  protected CaveStorage storage;
   
   // Two subscription records, tied to id1 and id2
-  private SubscriptionRecord sub1, sub2;
+  protected SubscriptionRecord sub1, sub2;
   
-  private String id1 = "id02";
-  private String id2 = "id-203212";
+  protected String id1 = "id02";
+  protected String id2 = "id-203212";
   
-  private Point3 p000 = new Point3(0, 0, 0);
+  protected Point3 p000 = new Point3(0, 0, 0);
 
-  private Point3 p876 = new Point3(8,7,6);
-  private Point3 p273 = new Point3(2,7,3);
+  protected Point3 p876 = new Point3(8,7,6);
+  protected Point3 p273 = new Point3(2,7,3);
 
   @Before
   public void setUp() throws Exception {
