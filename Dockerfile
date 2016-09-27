@@ -14,6 +14,6 @@ ADD . ${skycave}
 
 # Build src, avoiding test files
 # OBS! the test files are always created when starting the container
-RUN ant build.src
+# RUN ant build.src
 
 ENTRYPOINT ["/bin/bash", "./entry-point.sh"]
