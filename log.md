@@ -274,4 +274,6 @@ To delete a collection, you can use the drop function. BE ADVISED! You will get 
 
     db.collection.drop();
 
+the MongoDB is not visible from outside sources beccause we use expose in docker, this does not publish them to the host machine.
+
 -------------------------------------------------------------------
