@@ -6,19 +6,11 @@ services:
             - "37123:37123"
         depends_on:
             - mongo
+        links:
+          - mongo
+        command: daemon #-Dcpf=mongo-storage.cpf
     mongo:
         image: mongo:3.2.9
         volumes:
             - /data/db
         command: --smallfiles --noprealloc
-        networks:
-            app_net:
-                ipv4_address: 172.17.0.2 #the one used locally as well
-networks:
-    app_net:
-        driver: bridge
-        ipam:
-            driver: default
-            config:
-                - subnet: 172.17.0.0/24
-                  gateway: 172.17.0.1
