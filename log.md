@@ -209,6 +209,10 @@ Also consider if Build.src is overkill?
 first run "docker login" to login to the hub.docker user (there is only this option for a provider)
 images must be tagged before commiting with "docker tag [image-id] [reponame:tagname]"
 
+## Docker Stuff
+Enter container:
+    docker exec -i -t containerNameOrID /bin/bash
+
 -------------------------------------------------------------------
 # iteration 2
 [External Services and Stability Patterns](https://cs.au.dk/~baerbak/c/cloud/mandatory2.html)
@@ -265,5 +269,9 @@ update only updates the first it finds (using unique identifiers for the query i
 mount host storage on vm:
 
 	$ docker run --name some-mongo -v /my/own/datadir:/data/db -d mongo:tag
+
+To delete a collection, you can use the drop function. BE ADVISED! You will get NO warning prompt!
+
+    db.collection.drop();
 
 -------------------------------------------------------------------
