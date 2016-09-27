@@ -9,6 +9,7 @@ import cloud.cave.config.StandardObjectManager;
 import cloud.cave.domain.Region;
 import cloud.cave.doubles.AllTestDoubleFactory;
 import cloud.cave.doubles.ExceptionHttpRequester;
+import cloud.cave.doubles.FakeCaveClock;
 import cloud.cave.doubles.NullObjectManager;
 import cloud.cave.server.HttpRequester;
 import cloud.cave.server.Requester;
@@ -38,19 +39,12 @@ import static org.junit.Assert.*;
 public class TestWeatherService {
     private WeatherService weatherService;
     private ObjectManager manager;
+    private FakeCaveClock clock;
 
     @Before
     public void setup() {
         manager = new StandardObjectManager(new AllTestDoubleFactory());
-    }
-
-
-    private void sleep(long time) {
-        try {
-            Thread.sleep(time + 1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        clock = new FakeCaveClock();
     }
 
     @Test
@@ -115,8 +109,7 @@ public class TestWeatherService {
 
     @Test
     public void testClosedToOpen() {
-        weatherService = new CircuitBreakerWeatherServiceDecorator(new StandardWeatherService(new ExceptionHttpRequester(new CaveCantConnectException(""))),200,100);
-        //weatherService = new StandardWeatherService(new ExceptionHttpRequester(new CaveCantConnectException("")),200,100);
+        weatherService = new CircuitBreakerWeatherServiceDecorator(new StandardWeatherService(new ExceptionHttpRequester(new CaveCantConnectException(""))),200,100,clock);
         ServerConfiguration config = new ServerConfiguration("", 0);
         weatherService.initialize(manager, config);
 
@@ -135,19 +128,19 @@ public class TestWeatherService {
 
     @Test
     public void testHalfOpenToOpen() {
-        weatherService = new CircuitBreakerWeatherServiceDecorator(new StandardWeatherService(new ExceptionHttpRequester(new CaveCantConnectException(""))),200,100);
+        weatherService = new CircuitBreakerWeatherServiceDecorator(new StandardWeatherService(new ExceptionHttpRequester(new CaveCantConnectException(""))),200,100,clock);
         ServerConfiguration config = new ServerConfiguration("", 0);
         weatherService.initialize(manager, config);
 
+        weatherService.requestWeather("","",Region.AARHUS);
+        weatherService.requestWeather("","",Region.AARHUS);
         JSONObject response = weatherService.requestWeather("","",Region.AARHUS);
-        response = weatherService.requestWeather("","",Region.AARHUS);
-        response = weatherService.requestWeather("","",Region.AARHUS);
         assertThat((String) response.get("errorMessage"), containsString("Closed"));
 
         response = weatherService.requestWeather("","",Region.AARHUS);
         assertThat((String) response.get("errorMessage"), containsString("(Open"));
 
-        sleep(200);
+        clock.increment(200);
 
         response = weatherService.requestWeather("","",Region.AARHUS);
         assertThat((String) response.get("errorMessage"), containsString("HalfOpen"));
@@ -160,7 +153,7 @@ public class TestWeatherService {
     public void testHalfOpenToClosed() {
 
         ExceptionHttpRequester requester = new ExceptionHttpRequester(new CaveCantConnectException(""));
-        weatherService = new CircuitBreakerWeatherServiceDecorator(new StandardWeatherService(requester),200,100);
+        weatherService = new CircuitBreakerWeatherServiceDecorator(new StandardWeatherService(requester),200,100,clock);
         ServerConfiguration config = new ServerConfiguration("", 0);
         weatherService.initialize(manager, config);
 
@@ -172,7 +165,7 @@ public class TestWeatherService {
         response = weatherService.requestWeather("","",Region.AARHUS);
         assertThat((String) response.get("errorMessage"), containsString("(Open"));
 
-        sleep(200);
+        clock.increment(200);
 
         //if we do this we go to open again
         //response = weatherService.requestWeather("","",Region.AARHUS);
@@ -188,13 +181,13 @@ public class TestWeatherService {
 
     @Test
     public void testFailSpacing() {
-        weatherService = new CircuitBreakerWeatherServiceDecorator(new StandardWeatherService(new ExceptionHttpRequester(new CaveCantConnectException(""))),200,100);
+        weatherService = new CircuitBreakerWeatherServiceDecorator(new StandardWeatherService(new ExceptionHttpRequester(new CaveCantConnectException(""))),200,100,clock);
         ServerConfiguration config = new ServerConfiguration("", 0);
         weatherService.initialize(manager, config);
 
         weatherService.requestWeather("","",Region.AARHUS);
         weatherService.requestWeather("","",Region.AARHUS);
-        sleep(100);
+        clock.increment(100);
         weatherService.requestWeather("","",Region.AARHUS);
         JSONObject response = weatherService.requestWeather("","",Region.AARHUS);
         assertThat((String) response.get("errorMessage"), containsString("Closed"));

@@ -4,7 +4,9 @@ import cloud.cave.common.CaveCantConnectException;
 import cloud.cave.common.Inspector;
 import cloud.cave.config.ObjectManager;
 import cloud.cave.domain.Region;
+import cloud.cave.server.CaveClock;
 import cloud.cave.server.CircuitBreaker;
+import cloud.cave.server.RealCaveClock;
 import cloud.cave.server.StandardCircuitBreaker;
 import cloud.cave.server.common.ServerConfiguration;
 import org.json.simple.JSONObject;
@@ -21,17 +23,20 @@ public class CircuitBreakerWeatherServiceDecorator implements WeatherService {
     private ObjectManager objectManager;
     private Inspector inspector;
     private StandardCircuitBreaker circuitBreaker;
+    private CaveClock clock;
 
     public CircuitBreakerWeatherServiceDecorator() {
         this.service = new StandardWeatherService();
         this.timeToHalf = 20000;
         this.failSpacing = 8000;
+        clock = new RealCaveClock();
     }
 
-    public CircuitBreakerWeatherServiceDecorator(WeatherService service, long timeToHalf, long failSpacing) {
+    public CircuitBreakerWeatherServiceDecorator(WeatherService service, long timeToHalf, long failSpacing, CaveClock clock) {
         this.service = service;
         this.timeToHalf = timeToHalf;
         this.failSpacing = failSpacing;
+        this.clock = clock;
     }
 
     @Override
@@ -62,7 +67,7 @@ public class CircuitBreakerWeatherServiceDecorator implements WeatherService {
         this.objectManager = objectManager;
         this.inspector = objectManager.getInspector();
         service.initialize(objectManager,config);
-        circuitBreaker = new StandardCircuitBreaker(timeToHalf, failSpacing, inspector);
+        circuitBreaker = new StandardCircuitBreaker(timeToHalf, failSpacing, inspector, clock);
     }
 
     @Override

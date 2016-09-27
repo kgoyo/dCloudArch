@@ -13,22 +13,24 @@ public class StandardCircuitBreaker implements CircuitBreaker {
     private int counter = 0;
     private long lastFail = 0;
     private long timeEnteredOpen = 0;
+    private CaveClock clock;
 
     /**
      *
      * @param timeToHalf in millis
      * @param timeBetweenFail in millis
      */
-    public StandardCircuitBreaker(long timeToHalf, long timeBetweenFail, Inspector inspector) {
+    public StandardCircuitBreaker(long timeToHalf, long timeBetweenFail, Inspector inspector, CaveClock clock) {
         state = State.CLOSED;
         this.timeToHalf = timeToHalf;
         this.timeBetweenFail = timeBetweenFail;
         this.inspector = inspector;
+        this.clock = clock;
     }
 
     @Override
     public State getState() {
-        long time = java.lang.System.currentTimeMillis();
+        long time = clock.getTime();
         if (state==State.OPEN && time >= (timeEnteredOpen + timeToHalf)) {
             //open -> halfopen
             inspector.write(Inspector.WEATHER_CIRCUIT_BREAKER_TOPIC, "Open -> HalfOpen");
@@ -46,10 +48,10 @@ public class StandardCircuitBreaker implements CircuitBreaker {
             //half-open -> open
             inspector.write(Inspector.WEATHER_CIRCUIT_BREAKER_TOPIC, "HalfOpen -> Open");
             state = State.OPEN;
-            timeEnteredOpen = java.lang.System.currentTimeMillis();
+            timeEnteredOpen = clock.getTime();
             return;
         }
-        long time = java.lang.System.currentTimeMillis();
+        long time = clock.getTime();
         if (timeBetweenFail > (time - lastFail)) {
             counter++;
 
@@ -57,12 +59,12 @@ public class StandardCircuitBreaker implements CircuitBreaker {
                 //closed -> open
                 inspector.write(Inspector.WEATHER_CIRCUIT_BREAKER_TOPIC, "Closed -> Open");
                 state = State.OPEN;
-                timeEnteredOpen = java.lang.System.currentTimeMillis();
+                timeEnteredOpen = clock.getTime();
             }
         } else {
             counter = 1;
         }
-        lastFail = java.lang.System.currentTimeMillis();
+        lastFail = clock.getTime();
 }
 
     @Override

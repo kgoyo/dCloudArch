@@ -1,5 +1,6 @@
 package cloud.cave.server;
 
+import cloud.cave.doubles.FakeCaveClock;
 import cloud.cave.doubles.NullInspector;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,21 +14,15 @@ public class TestCircuitBreaker {
     private CircuitBreaker cb;
     private long timetoHalf;
     private long timeBetweenFails;
+    private FakeCaveClock clock;
 
 
     @Before
     public void setup() {
         timetoHalf = 200;
         timeBetweenFails = 100;
-        cb = new StandardCircuitBreaker(timetoHalf,timeBetweenFails, new NullInspector());
-    }
-
-    private void sleep(long time) {
-        try {
-            Thread.sleep(time + 1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        clock = new FakeCaveClock();
+        cb = new StandardCircuitBreaker(timetoHalf,timeBetweenFails, new NullInspector(), clock);
     }
 
     @Test
@@ -45,7 +40,7 @@ public class TestCircuitBreaker {
     public void shouldResetAfterTimeBetweenFail() {
         cb.increment();
         cb.increment();
-        sleep(timeBetweenFails);
+        clock.increment(timeBetweenFails);
         cb.increment();
         assertEquals(CircuitBreaker.State.CLOSED, cb.getState());
         cb.increment();
@@ -63,7 +58,7 @@ public class TestCircuitBreaker {
         assertEquals(CircuitBreaker.State.OPEN, cb.getState());
         cb.reset();
         assertEquals(CircuitBreaker.State.OPEN, cb.getState());
-        sleep(timetoHalf);
+        clock.increment(timetoHalf);
         assertEquals(CircuitBreaker.State.HALFOPEN, cb.getState());
         cb.reset();
         assertEquals(CircuitBreaker.State.CLOSED, cb.getState());
@@ -74,7 +69,7 @@ public class TestCircuitBreaker {
         cb.increment();
         cb.increment();
         cb.increment();
-        sleep(timetoHalf);
+        clock.increment(timetoHalf);
         assertEquals(CircuitBreaker.State.HALFOPEN, cb.getState());
         cb.increment();
         assertEquals(CircuitBreaker.State.OPEN, cb.getState());
