@@ -276,4 +276,37 @@ To delete a collection, you can use the drop function. BE ADVISED! You will get 
 
 the MongoDB is not visible from outside sources beccause we use expose in docker, this does not publish them to the host machine.
 
--------------------------------------------------------------------
+
+## Excercise 'mongo-replica-set'
+
+Inspiration: http://www.sohamkamani.com/blog/2016/06/30/docker-mongo-replica-set/
+
+Create shared network (which can be viewed at `docker network ls`
+
+    docker network create --driver bridge repl_network
+
+Start docker containers running `mongod` with flag `--replSet "[repl-name]"`
+
+```
+docker run -p 30001:27017 --net repl_network --name mr1 -d mongo --smallfiles --noprealloc --replSet rs0
+docker run -p 30002:27017 --net repl_network --name mr2 -d mongo --smallfiles --noprealloc --replSet rs0
+docker run -p 30003:27017 --net repl_network --name mr3 -d mongo --smallfiles --noprealloc --replSet rs0
+```
+
+Enter the mongo shell on mr1
+
+    docker exec -ti mr1 mongo
+
+
+Setup config for `rs.initiate();`
+
+    config = {"_id" : "rs0", "members" : [{"_id" : 0, "host" : "mr1:27017"},{"_id" : 1,"host" : "mr2:27017"},{"_id" : 2,"host" : "mr3:27017"}]}
+
+
+Initiate voting by running
+
+    rs.initiate(config);
+    
+   
+### Observations:
+ - You can't run `find()` on a secondary machine
