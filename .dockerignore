@@ -2,10 +2,16 @@
 	TEST-RESULT/
 	build/
 	javadoc/
+	
+	review.zip
 
 # Ignore Git
 	.gitignore
 	.git/
 
 # Ignore Idea
-    .idea/
+	.idea/
+
+# Stuff
+	log.txt
+	log.md
