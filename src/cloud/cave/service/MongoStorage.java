@@ -1,10 +1,11 @@
 package cloud.cave.service;
 
+import cloud.cave.common.CaveStorageUnavailableException;
 import cloud.cave.config.ObjectManager;
 import cloud.cave.domain.Direction;
 import cloud.cave.domain.Region;
 import cloud.cave.server.common.*;
-import com.mongodb.MongoClient;
+import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
@@ -35,16 +36,20 @@ public class MongoStorage implements CaveStorage {
     @Override
     public RoomRecord getRoom(String positionString) {
         Document roomFilter = new Document().append(POINT, positionString);
-        ArrayList<Document> documents = rooms.find(roomFilter).limit(1).into(new ArrayList<Document>());
+        try {
+            ArrayList<Document> documents = rooms.find(roomFilter).limit(1).into(new ArrayList<Document>());
 
-        //if no room on given position can be found
-        if (documents.size() == 0)
-            return null;
+            //if no room on given position can be found
+            if (documents.size() == 0)
+                return null;
 
-        String description = (String) documents.get(0).get(DESCRIPTION);
-        RoomRecord res = new RoomRecord(description);
+            String description = (String) documents.get(0).get(DESCRIPTION);
+            RoomRecord res = new RoomRecord(description);
 
-        return res;
+            return res;
+        } catch (MongoSocketReadException e) {
+            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
+        }
     }
 
     @Override
@@ -60,9 +65,8 @@ public class MongoStorage implements CaveStorage {
 
         try {
             rooms.insertOne(newRoom);
-        } catch (Exception e) {
-            System.out.println("WADDUP!!! " + e.getClass().getCanonicalName() + "¤¤¤¤¤¤¤¤");
-            e.printStackTrace();
+        } catch (MongoSocketReadException e) {
+            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
 
         return true;
@@ -92,13 +96,17 @@ public class MongoStorage implements CaveStorage {
     @Override
     public PlayerRecord getPlayerByID(String playerID) {
         Document playerFilter = new Document().append(PLAYERID, playerID);
-        ArrayList<Document> documents = players.find(playerFilter).limit(1).into(new ArrayList<Document>());
+        try {
+            ArrayList<Document> documents = players.find(playerFilter).limit(1).into(new ArrayList<Document>());
 
-        //if no room on given position can be found
-        if (documents.size() == 0)
-            return null;
+            //if no room on given position can be found
+            if (documents.size() == 0)
+                return null;
 
-        return documentToPlayerRecord(documents.get(0));
+            return documentToPlayerRecord(documents.get(0));
+        } catch(MongoSocketReadException e) {
+            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
+        }
     }
 
     private PlayerRecord documentToPlayerRecord(Document document) {
@@ -129,39 +137,63 @@ public class MongoStorage implements CaveStorage {
             players.updateOne(new Document(PLAYERID, record.getPlayerID()),
                     new Document("$set", playerRecordToDocument(record)),
                     new UpdateOptions().upsert(true));
-        } catch(Exception e) {
-            System.out.println("WADDUP!!! " + e.getClass().getCanonicalName() + "¤¤¤¤¤¤¤¤");
-            e.printStackTrace();
+        } catch(MongoSocketReadException e) {
+            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
     }
 
     @Override
     public List<PlayerRecord> computeListOfPlayersAt(String positionString) {
         Document positionFilter = new Document().append(POINT, positionString);
-        ArrayList<Document> documents = players.find(positionFilter).into(new ArrayList<Document>());
+        try {
+            ArrayList<Document> documents = players.find(positionFilter).into(new ArrayList<Document>());
 
-        ArrayList<PlayerRecord> res = new ArrayList<>();
+            ArrayList<PlayerRecord> res = new ArrayList<>();
 
-        for (Document d: documents) {
-            res.add(documentToPlayerRecord(d));
+            for (Document d: documents) {
+                res.add(documentToPlayerRecord(d));
+            }
+
+            return res;
+        } catch(MongoSocketReadException e) {
+            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
-
-        return res;
     }
 
     @Override
     public int computeCountOfActivePlayers() {
         Document sessionFilter = new Document().append(SESSIONID, new Document("$ne", null));
-        ArrayList<Document> documents = players.find(sessionFilter).into(new ArrayList<Document>());
-
-        return documents.size();
+        try {
+            ArrayList<Document> documents = players.find(sessionFilter).into(new ArrayList<Document>());
+            return documents.size();
+        } catch(MongoSocketReadException e) {
+            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
+        }
     }
 
     @Override
     public void initialize(ObjectManager objectManager, ServerConfiguration config) {
         this.serverConfiguration = config;
+
+        MongoClientOptions mco = MongoClientOptions.builder()
+                                                        //.connectTimeout(5000)
+                                                        .readPreference(ReadPreference.secondaryPreferred())
+                                                        .build();
+
+        // Add all addresses for the replicas
+        ArrayList<ServerAddress> addrs = new ArrayList<>();
+        for (int i = 0 ; i < config.size(); i++ ){
+            ServerData data = config.get(i);
+            ServerAddress addr = new ServerAddress(data.getHostName(),data.getPortNumber());
+            addrs.add(addr);
+        }
+
+        /*
         ServerData data = config.get(0);
-        mongo = new MongoClient(data.getHostName(),data.getPortNumber());
+        ServerAddress addr = new ServerAddress(data.getHostName(),data.getPortNumber());
+        */
+
+        mongo = new MongoClient(addrs, mco);
 
         MongoDatabase db = mongo.getDatabase("skycave");
         rooms = db.getCollection("rooms");

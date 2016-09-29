@@ -307,6 +307,14 @@ Initiate voting by running
 
     rs.initiate(config);
     
+    
+Run the daemon on same virtual network
+
+    docker run -ti -p 37123:37123 -v /home/amao/workspace/ivy2_docker/:/root/.ivy2 --net repl_network andreasmalling/dcloudarch_css-14 daemon -Dcpf=mongo-replica-set.cpf
    
 ### Observations:
  - You can't run `find()` on a secondary machine
+
+## Excercise 'availability-failover'
+
+    docker run -ti -v /home/amao/workspace/ivy2_docker/:/root/.ivy2 --net repl_network andreasmalling/dcloudarch_css-14 load.mongo -Dcpf=availability-failover.cpf

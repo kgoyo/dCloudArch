@@ -2,6 +2,7 @@ package cloud.cave.client;
 
 import java.util.*;
 
+import cloud.cave.common.CaveStorageUnavailableException;
 import cloud.cave.common.PlayerDisconnectedException;
 import org.json.simple.*;
 
@@ -246,6 +247,9 @@ public class PlayerProxy implements Player, ClientProxy, Requestor {
     } else if ( statusCode.equals(StatusCode.SERVER_FAILURE) ) {
       String errMsg = replyJson.get(MarshalingKeys.ERROR_MSG_KEY).toString();
       throw new PlayerDisconnectedException(errMsg);
+    } else if ( statusCode.equals(StatusCode.SERVER_STORAGE_UNAVAILABLE)) {
+      String errMsg = replyJson.get(MarshalingKeys.ERROR_MSG_KEY).toString();
+      throw new CaveStorageUnavailableException(errMsg);
     }
     return replyJson;
   }

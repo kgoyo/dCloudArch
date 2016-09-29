@@ -52,7 +52,7 @@ public class CircuitBreakerWeatherServiceDecorator implements WeatherService {
             circuitBreaker.reset();
         } catch (CaveCantConnectException e) {
             weather.put("authenticated","false");
-            weather.put("errorMessage","*** Weather service is not available, sorry. " + circuitBreaker.stateToString() + " ***");
+            weather.put("errorMessage","*** Weather service not available, sorry. " + circuitBreaker.stateToString() + " ***");
 
         }
         if (((String) weather.get("errorMessage")).contains("sorry")) {

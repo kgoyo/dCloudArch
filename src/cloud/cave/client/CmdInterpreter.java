@@ -3,6 +3,7 @@ package cloud.cave.client;
 import java.io.*;
 import java.util.List;
 
+import cloud.cave.common.CaveStorageUnavailableException;
 import cloud.cave.common.PlayerDisconnectedException;
 import org.json.simple.*;
 
@@ -103,6 +104,9 @@ public class CmdInterpreter {
           }
         } catch (PlayerDisconnectedException e) {
           systemOut.println("*** Sorry - I cannot do that as I am disconnected from the cave, please quit ***");
+          //we disconnect here even though we shouldn't...
+        } catch (CaveStorageUnavailableException e) {
+          systemOut.println("*** Sorry - I couldn't connect to the database, please try again later ***");
           //we disconnect here even though we shouldn't...
         }
       } while (!line.equals("q"));

@@ -2,6 +2,7 @@ package cloud.cave.server;
 
 import java.util.List;
 
+import cloud.cave.common.CaveStorageUnavailableException;
 import org.json.simple.*;
 
 import cloud.cave.broker.*;
@@ -34,7 +35,7 @@ public class PlayerDispatcher implements Dispatcher {
     JSONObject reply = null;
     try {
       // Fetch the server side player object from cache
-      Player player = objectManager.getPlayerSessionCache().get(playerID); 
+      Player player = objectManager.getPlayerSessionCache().get(playerID);
 
       // Access control of the 'Blizzard' variant: the last
       // login (= session) is the one winning. If the session id
@@ -46,26 +47,26 @@ public class PlayerDispatcher implements Dispatcher {
       // told that he/she cannot control the avatar any more.
       if (!sessionID.equals(player.getSessionID())) {
         throw new PlayerSessionExpiredException(
-            "PlayerDispatcher: The session for player " + player.getID()
-                + " is no longer valid (Client session="+sessionID+"/Server cached session="
-                +player.getSessionID()+").");
+                "PlayerDispatcher: The session for player " + player.getID()
+                        + " is no longer valid (Client session=" + sessionID + "/Server cached session="
+                        + player.getSessionID() + ").");
       }
 
       // === SHORT ROOM
       if (methodKey
-          .equals(MarshalingKeys.GET_SHORT_ROOM_DESCRIPTION_METHOD_KEY)) {
+              .equals(MarshalingKeys.GET_SHORT_ROOM_DESCRIPTION_METHOD_KEY)) {
         reply = Marshaling.createValidReplyWithReturnValue(player
-            .getShortRoomDescription());
+                .getShortRoomDescription());
       }
       // === REGION
       else if (methodKey.equals(MarshalingKeys.GET_REGION_METHOD_KEY)) {
         reply = Marshaling.createValidReplyWithReturnValue(player.getRegion()
-            .toString());
+                .toString());
       }
       // === POSITION
       else if (methodKey.equals(MarshalingKeys.GET_POSITION_METHOD_KEY)) {
         reply = Marshaling
-            .createValidReplyWithReturnValue(player.getPosition());
+                .createValidReplyWithReturnValue(player.getPosition());
       }
       // === PLAYERS HERE
       else if (methodKey.equals(MarshalingKeys.GET_PLAYERS_HERE_METHOD_KEY)) {
@@ -125,26 +126,29 @@ public class PlayerDispatcher implements Dispatcher {
 
         reply = player.execute(commandName, parameters);
       }
-	   // === WEATHER
+      // === WEATHER
       else if (methodKey.equals(MarshalingKeys.GET_WEATHER_METHOD_KEY)) {
         reply = Marshaling
-            .createValidReplyWithReturnValue(player.getWeather());
+                .createValidReplyWithReturnValue(player.getWeather());
       }
-      
+
       // === ADD MESSAGE
       else if (methodKey.equals(MarshalingKeys.ADD_MESSAGE_METHOD_KEY)) {
-    	  player.addMessage(parameter1);
-    	  reply = Marshaling.createValidReplyWithReturnValue("" + true);
+        player.addMessage(parameter1);
+        reply = Marshaling.createValidReplyWithReturnValue("" + true);
       }
-      
+
       // === GET MESSAGE LIST
       else if (methodKey.equals(MarshalingKeys.GET_MESSAGE_LIST_METHOD_KEY)) {
-    	  List<String> list = player.getMessageList();
-    	  String[] asArray = new String[list.size()];
-    	  list.toArray(asArray);
-    	  
-    	  reply = Marshaling.createValidReplyWithReturnValue("notused",asArray);
+        List<String> list = player.getMessageList();
+        String[] asArray = new String[list.size()];
+        list.toArray(asArray);
+
+        reply = Marshaling.createValidReplyWithReturnValue("notused", asArray);
       }
+    } catch (CaveStorageUnavailableException e) {
+      reply = Marshaling.createInvalidReplyWithExplanation(StatusCode.SERVER_STORAGE_UNAVAILABLE,
+              e.getMessage());
     } catch (PlayerSessionExpiredException exc) {
       reply = Marshaling.createInvalidReplyWithExplanation(StatusCode.SERVER_PLAYER_SESSION_EXPIRED_FAILURE,
           exc.getMessage());

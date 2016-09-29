@@ -75,8 +75,7 @@ public class LoadGenerateStorageWrite {
       String roomDescription = "This is room no. "+i;
       wentOk = player.digRoom(Direction.DOWN, roomDescription);
       if ( ! wentOk ) {
-        System.out.println("ERROR: The cave is not empty, failed on digging room at position: "+player.getPosition());
-        System.exit(-1); // Fail fast...
+        System.out.println("WARNING: The cave is not empty, failed on digging room at position: "+player.getPosition());
       }
       // move down then
       player.move(Direction.DOWN);
