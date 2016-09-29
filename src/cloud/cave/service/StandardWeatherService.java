@@ -33,7 +33,7 @@ public class StandardWeatherService implements WeatherService {
 
     //no timeouts
     public StandardWeatherService() {
-        http = new HttpRequester(30000,30000); //large timeouts, because we cant disable them completely...
+        http = new HttpRequester(3000,8000); //large timeouts, because we cant disable them completely...
     }
 
     //can set HttpRequester to modify timeouts
