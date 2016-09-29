@@ -58,7 +58,12 @@ public class MongoStorage implements CaveStorage {
         newRoom.append(DESCRIPTION, description.description);
         //newRoom.append(MESSAGES,new ArrayList<Document>());
 
-        rooms.insertOne(newRoom);
+        try {
+            rooms.insertOne(newRoom);
+        } catch (Exception e) {
+            System.out.println("WADDUP!!! " + e.getClass().getCanonicalName() + "¤¤¤¤¤¤¤¤");
+            e.printStackTrace();
+        }
 
         return true;
     }
@@ -120,9 +125,14 @@ public class MongoStorage implements CaveStorage {
 
     @Override
     public void updatePlayerRecord(PlayerRecord record) {
-        players.updateOne(new Document(PLAYERID, record.getPlayerID()),
-                            new Document("$set", playerRecordToDocument(record)),
-                          new UpdateOptions().upsert(true));
+        try {
+            players.updateOne(new Document(PLAYERID, record.getPlayerID()),
+                    new Document("$set", playerRecordToDocument(record)),
+                    new UpdateOptions().upsert(true));
+        } catch(Exception e) {
+            System.out.println("WADDUP!!! " + e.getClass().getCanonicalName() + "¤¤¤¤¤¤¤¤");
+            e.printStackTrace();
+        }
     }
 
     @Override
