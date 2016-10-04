@@ -1,8 +1,10 @@
 package cloud.cave.service;
 
+import cloud.cave.common.CaveCantConnectException;
 import cloud.cave.config.ObjectManager;
 import cloud.cave.domain.Region;
 import cloud.cave.server.HttpRequester;
+import cloud.cave.server.Requester;
 import cloud.cave.server.common.ServerConfiguration;
 import cloud.cave.server.common.ServerData;
 import cloud.cave.server.common.SubscriptionRecord;
@@ -11,13 +13,24 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by kgoyo on 15-09-2016.
  */
 public class StandardSubscriptionService implements SubscriptionService {
     private ServerConfiguration configuration;
-    private HttpRequester http;
+    private Requester http;
+    private Map<String,SubscriptionRecord> offlineSubcriptionMap;
+
+    public StandardSubscriptionService() {
+        http = new HttpRequester(3000,8000);
+    }
+
+    public StandardSubscriptionService(Requester req) {
+        http = req;
+    }
 
     @Override
     public SubscriptionRecord lookup(String loginName, String password) {
@@ -28,12 +41,10 @@ public class StandardSubscriptionService implements SubscriptionService {
         try {
             response = http.responseContentToJSON(http.getResponse(url));
 
-        } catch (IOException e) {
+        } catch (IOException | CaveCantConnectException | ParseException e) {
             //exception occurred, due to server error
-            return null;
-        } catch (ParseException e) {
-            //handle hostile service
-            return null;
+            SubscriptionRecord offlineRecord = offlineSubcriptionMap.get(loginName+password);
+            return offlineRecord; //is null if none was found
         }
         if (response != null) {
             if ((boolean) response.get("success")) {
@@ -43,7 +54,9 @@ public class StandardSubscriptionService implements SubscriptionService {
                 String playerName = (String) subscription.get("playerName");
                 String groupName = (String) subscription.get("groupName");
                 Region region = Region.valueOf((String) subscription.get("region"));
-                return new SubscriptionRecord(playerID, playerName, groupName, region);
+                SubscriptionRecord record = new SubscriptionRecord(playerID, playerName, groupName, region);
+                offlineSubcriptionMap.put(loginName+password, record);
+                return record;
             } else {
                 //invalid credentials
                 return new SubscriptionRecord( SubscriptionResult.LOGIN_NAME_OR_PASSWORD_IS_UNKNOWN );
@@ -61,7 +74,7 @@ public class StandardSubscriptionService implements SubscriptionService {
     @Override
     public void initialize(ObjectManager objMgr, ServerConfiguration config) {
         this.configuration = config;
-        http = new HttpRequester(3000,8000);
+        offlineSubcriptionMap = new HashMap<>();
     }
 
     @Override

@@ -26,7 +26,7 @@ public class CaveServant implements Cave, Servant {
   
   private Logger logger;
 
-    private Map<String,SubscriptionRecord> offlineSubcriptionMap = new HashMap<>();
+
 
   /**
    * Construct the Cave servant object with the delegates/dependencies given by
@@ -63,14 +63,10 @@ public class CaveServant implements Cave, Servant {
     String errorMsg = null;
     try {
       subscription = subscriptionService.lookup(loginName, password);
-        offlineSubcriptionMap.put(loginName+password,subscription);
     } catch (CaveIPCException e) {
         //get from offline map in case we have that key value pair
-        subscription = offlineSubcriptionMap.get(loginName+password);
-        if (subscription == null) {
-            errorMsg = "Lookup failed on subscription service due to IPC exception:" + e.getMessage();
-            logger.error(errorMsg);
-        }
+        errorMsg = "Lookup failed on subscription service due to IPC exception:" + e.getMessage();
+        logger.error(errorMsg);
     }
     
     if (subscription==null) {

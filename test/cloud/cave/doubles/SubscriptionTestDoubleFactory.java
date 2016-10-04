@@ -1,6 +1,7 @@
 package cloud.cave.doubles;
 
 import cloud.cave.config.ObjectManager;
+import cloud.cave.server.common.ServerConfiguration;
 import cloud.cave.service.SubscriptionService;
 
 /**
@@ -16,7 +17,7 @@ public class SubscriptionTestDoubleFactory extends AllTestDoubleFactory {
 
     @Override
     public SubscriptionService createSubscriptionServiceConnector(ObjectManager objMgr) {
-        service.initialize(null, null); // no config object required for the stub
+        service.initialize(null, new ServerConfiguration("doesn't matter", 0)); // no config object required for the stub
         return service;
     }
 }

@@ -3,6 +3,7 @@ package cloud.cave.service;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import cloud.cave.common.CaveCantConnectException;
 import cloud.cave.common.LoginRecord;
 import cloud.cave.config.CaveServerFactory;
 import cloud.cave.config.ObjectManager;
@@ -10,10 +11,7 @@ import cloud.cave.config.StandardObjectManager;
 import cloud.cave.domain.Cave;
 import cloud.cave.domain.Login;
 import cloud.cave.domain.LoginResult;
-import cloud.cave.doubles.AllTestDoubleFactory;
-import cloud.cave.doubles.SaboteurSubscriptionServiceDecorator;
-import cloud.cave.doubles.SubscriptionTestDoubleFactory;
-import cloud.cave.doubles.TestStubSubscriptionService;
+import cloud.cave.doubles.*;
 import org.junit.*;
 
 /**
@@ -21,12 +19,14 @@ import org.junit.*;
  */
 public class TestSubscriptionAvailability {
 
-    private SaboteurSubscriptionServiceDecorator service;
+    private SubscriptionService service;
     private Cave cave;
+    private SubscriptionExceptionHttpRequester req;
 
     @Before
     public void setup() {
-        service = new SaboteurSubscriptionServiceDecorator(new TestStubSubscriptionService());
+        req = new SubscriptionExceptionHttpRequester(new CaveCantConnectException(""));
+        service = new StandardSubscriptionService(req);
         CaveServerFactory factory = new SubscriptionTestDoubleFactory(service);
         ObjectManager objMgr = new StandardObjectManager(factory);
         cave = objMgr.getCave();
@@ -34,8 +34,8 @@ public class TestSubscriptionAvailability {
 
     @Test
     public void shouldNotLogin() {
-        service.toggleConnection();
-        Login actual = cave.login( "magnus_aarskort", "312");
+        req.toggleEnabled();
+        Login actual = cave.login("test", "1234");
         System.out.println(actual);
         Login expected = new LoginRecord(LoginResult.LOGIN_FAILED_SERVER_ERROR);
         assertEquals(expected.toString(),actual.toString());
@@ -43,11 +43,11 @@ public class TestSubscriptionAvailability {
 
     @Test
     public void ShouldBeAbleToLogin() {
-        cave.login( "magnus_aarskort", "312");
-        cave.logout("user-002");
-        service.toggleConnection();
-        Login actual = cave.login( "magnus_aarskort", "312");
-        String expectedString = "(LoginResult: Magnus/LOGIN_SUCCESS)";
+        cave.login( "test", "1234");
+        cave.logout("testid");
+        req.toggleEnabled();
+        Login actual = cave.login( "test", "1234");
+        String expectedString = "(LoginResult: username/LOGIN_SUCCESS)";
         assertEquals(expectedString,actual.toString());
     }
 }
