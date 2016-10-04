@@ -310,14 +310,17 @@ Setup config for `rs.initiate();`
 Initiate voting by running
 
     rs.initiate(config);
-    
-    
+
+
 Run the daemon on same virtual network
 
     docker run -ti -p 37123:37123 -v /home/amao/workspace/ivy2_docker/:/root/.ivy2 --net repl_network andreasmalling/dcloudarch_css-14 daemon -Dcpf=mongo-replica-set.cpf
-   
+
 ### Observations:
  - You can't run `find()` on a secondary machine
+
+when connecting to the replica set with the mongoclient we have to use the hostname defined by the replicaset
+this also means that the daemon has to be run in a docker container in the same network as the mongo containers
 
 ## Excercise 'availability-failover'
 
