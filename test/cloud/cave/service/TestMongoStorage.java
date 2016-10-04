@@ -15,13 +15,13 @@ public class TestMongoStorage extends TestStorage {
     @Override
     @Before
     public void setUp() throws Exception {
-        MongoClient client = new MongoClient("172.17.0.2", 27017);
+        MongoClient client = new MongoClient("localhost", 27017);
         client.getDatabase("skycave").getCollection("rooms").drop();
         client.getDatabase("skycave").getCollection("players").drop();
         client.close();
 
         storage = new MongoStorage();
-        storage.initialize(null,new ServerConfiguration("172.17.0.2", 27017));
+        storage.initialize(null,new ServerConfiguration("localhost", 27017));
 
         sub1 = new SubscriptionRecord(id1,"Tutmosis", "grp01", Region.ODENSE);
         sub2 = new SubscriptionRecord(id2, "MrLongName", "grp02", Region.COPENHAGEN);

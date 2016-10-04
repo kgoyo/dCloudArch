@@ -121,11 +121,15 @@ public class PlayerProxy implements Player, ClientProxy, Requestor {
   @Override
   public boolean move(Direction direction) {
     requestJson = createRequestObject(MarshalingKeys.MOVE_METHOD_KEY, 
-            direction.toString()); 
-    JSONObject replyJson = requestAndAwaitReply(requestJson); 
-    String asString = replyJson.get(MarshalingKeys.RETURNVALUE_HEAD_KEY).toString(); 
-    boolean unboxed = Boolean.parseBoolean(asString); 
-    return unboxed; 
+            direction.toString());
+    try {
+      JSONObject replyJson = requestAndAwaitReply(requestJson);
+      String asString = replyJson.get(MarshalingKeys.RETURNVALUE_HEAD_KEY).toString();
+      boolean unboxed = Boolean.parseBoolean(asString);
+      return unboxed;
+    } catch (CaveStorageUnavailableException e) {
+      return false;
+    }
   }
 
   @Override
@@ -144,10 +148,14 @@ public class PlayerProxy implements Player, ClientProxy, Requestor {
         Marshaling.createRequestObject(playerID, 
             sessionID, MarshalingKeys.DIG_ROOM_METHOD_KEY, 
             ""+direction.toString(), description);
-    JSONObject replyJson = requestAndAwaitReply(requestJson); 
-    String asString = replyJson.get(MarshalingKeys.RETURNVALUE_HEAD_KEY).toString(); 
-    boolean unboxed = Boolean.parseBoolean(asString); 
-    return unboxed;
+    try {
+        JSONObject replyJson = requestAndAwaitReply(requestJson);
+        String asString = replyJson.get(MarshalingKeys.RETURNVALUE_HEAD_KEY).toString();
+        boolean unboxed = Boolean.parseBoolean(asString);
+        return unboxed;
+    } catch (CaveStorageUnavailableException e) {
+      return false;
+    }
   }
 
   @Override

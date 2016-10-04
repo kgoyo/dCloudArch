@@ -114,8 +114,12 @@ class SpyCaveStorage implements CaveStorage {
   }
   
   public List<String> getMessageList(String positionString) {
-	  //TODO FIX
-	  return null;
+	  return decoratee.getMessageList(positionString);
+  }
+
+  @Override
+  public void addMessage(String positionString, String messageString) {
+    decoratee.addMessage(positionString, messageString);
   }
 
 

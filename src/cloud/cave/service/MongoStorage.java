@@ -6,6 +6,7 @@ import cloud.cave.domain.Direction;
 import cloud.cave.domain.Region;
 import cloud.cave.server.common.*;
 import com.mongodb.*;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
@@ -20,18 +21,19 @@ public class MongoStorage implements CaveStorage {
 
     private static final String POINT = "point";
     private static final String DESCRIPTION = "description";
-    private static final String MESSAGES = "messages";
     private static final String SESSIONID = "sessionid";
     private static final String PLAYERID = "playerid";
     private static final String PLAYERNAME = "playername";
     private static final String GROUPNAME = "groupname";
     private static final String REGION = "region";
-
+    private static final String MESSAGE_ID = "messageid";
+    private static final String MESSAGE = "message";
 
     private ServerConfiguration serverConfiguration;
+    private MongoClient mongo;
     private MongoCollection<Document> rooms;
     private MongoCollection<Document> players;
-    private MongoClient mongo;
+    private MongoCollection<Document> messages;
 
     @Override
     public RoomRecord getRoom(String positionString) {
@@ -47,7 +49,7 @@ public class MongoStorage implements CaveStorage {
             RoomRecord res = new RoomRecord(description);
 
             return res;
-        } catch (MongoSocketReadException e) {
+        } catch (MongoSocketReadException | MongoQueryException e) {
             throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
     }
@@ -90,7 +92,43 @@ public class MongoStorage implements CaveStorage {
 
     @Override
     public List<String> getMessageList(String positionString) {
-        return null;
+        try {
+            int ascendingOrder = 1;
+
+            FindIterable<Document> messageIter = messages.find(new Document(POINT, positionString))
+                                       .sort(new Document(MESSAGE_ID, ascendingOrder));
+                                       //.into(new ArrayList<Document>());
+
+            List messageList = new ArrayList<String>();
+
+            messageIter.forEach(new Block<Document>(){
+                @Override
+                public void apply(final Document document){
+                    String desc = (String) document.get(MESSAGE);
+                    messageList.add(desc);
+                }
+            });
+
+            return messageList;
+        } catch (MongoSocketReadException | MongoQueryException e) {
+            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
+        }
+    }
+
+    @Override
+    public void addMessage(String positionString, String messageString) {
+        try {
+            // Get current count of messages on position
+            long count = messages.count(new Document(POINT, positionString));
+
+            Document newMessage = new Document(POINT, positionString)
+                                       .append(MESSAGE_ID, count+1)
+                                       .append(MESSAGE, messageString);
+
+            messages.insertOne(newMessage);
+        } catch (MongoSocketReadException | MongoQueryException e) {
+            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
+        }
     }
 
     @Override
@@ -104,7 +142,7 @@ public class MongoStorage implements CaveStorage {
                 return null;
 
             return documentToPlayerRecord(documents.get(0));
-        } catch(MongoSocketReadException e) {
+        } catch(MongoSocketReadException | MongoQueryException e) {
             throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
     }
@@ -155,7 +193,7 @@ public class MongoStorage implements CaveStorage {
             }
 
             return res;
-        } catch(MongoSocketReadException e) {
+        } catch(MongoSocketReadException | MongoQueryException e) {
             throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
     }
@@ -166,7 +204,7 @@ public class MongoStorage implements CaveStorage {
         try {
             ArrayList<Document> documents = players.find(sessionFilter).into(new ArrayList<Document>());
             return documents.size();
-        } catch(MongoSocketReadException e) {
+        } catch(MongoSocketReadException | MongoQueryException e) {
             throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
     }
@@ -175,10 +213,12 @@ public class MongoStorage implements CaveStorage {
     public void initialize(ObjectManager objectManager, ServerConfiguration config) {
         this.serverConfiguration = config;
 
+        /*
         MongoClientOptions mco = MongoClientOptions.builder()
                                                         //.connectTimeout(5000)
                                                         .readPreference(ReadPreference.secondaryPreferred())
                                                         .build();
+        */
 
         // Add all addresses for the replicas
         ArrayList<ServerAddress> addrs = new ArrayList<>();
@@ -193,12 +233,13 @@ public class MongoStorage implements CaveStorage {
         ServerAddress addr = new ServerAddress(data.getHostName(),data.getPortNumber());
         */
 
-        mongo = new MongoClient(addrs, mco);
+        mongo = new MongoClient(addrs);
 
         MongoDatabase db = mongo.getDatabase("skycave");
         rooms = db.getCollection("rooms");
         players = db.getCollection("players");
-
+        messages = db.getCollection("messages");
+        messages.drop();    // According to exercise 'mongo-storage-wall' all messages should be dropped in initialization
 
         //setup default rooms if not present in db
         this.addRoom(new Point3(0, 0, 0).getPositionString(), new RoomRecord(

@@ -88,6 +88,12 @@ public class FakeCaveStorage implements CaveStorage {
 	  return wallMap.get(positionString);
   }
 
+  @Override
+  public void addMessage(String positionString, String messageString) {
+    List list = getMessageList(positionString);
+    list.add(messageString);
+  }
+
   // === The table with primary key playerID whose columns are the
   // specifications of a given player. The private datastructure PlayerSpecs
   // represents the

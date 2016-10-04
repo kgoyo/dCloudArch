@@ -277,6 +277,10 @@ To delete a collection, you can use the drop function. BE ADVISED! You will get 
 the MongoDB is not visible from outside sources beccause we use expose in docker, this does not publish them to the host machine.
 
 
+## Excercise 'docker-compose-db'
+
+    docker-compose -f docker-compose-db.yml up -d
+
 ## Excercise 'mongo-replica-set'
 
 Inspiration: http://www.sohamkamani.com/blog/2016/06/30/docker-mongo-replica-set/

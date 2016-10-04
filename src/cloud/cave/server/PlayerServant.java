@@ -135,8 +135,7 @@ public class PlayerServant implements Player {
 
   @Override
   public void addMessage(String message) {
-	  List<String> contents = storage.getMessageList(getPosition());
-	  contents.add("[" + name + "] " + message);
+	storage.addMessage(getPosition(), "[" + name + "] " + message);
   }
 
   @Override

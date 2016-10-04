@@ -18,9 +18,9 @@ import cloud.cave.domain.*;
  */
 public class TestWall {
 
-  private Cave cave;
+  protected Cave cave;
   
-  private Player player;
+  protected Player player;
 
   @Before
   public void setUp() throws Exception {

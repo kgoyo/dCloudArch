@@ -55,6 +55,14 @@ public interface CaveStorage extends ExternalService {
    */
   List<String> getMessageList(String positionString);
 
+  /**
+   * adds messages to the wall at a given position
+   *
+   * @param positionString position of the room whose wall is posted on
+   * @param messageString message to be posted on the chosen wall
+   */
+  void addMessage(String positionString, String messageString);
+
   // === Player record related
 
   /**
