@@ -239,7 +239,6 @@ public class MongoStorage implements CaveStorage {
         rooms = db.getCollection("rooms");
         players = db.getCollection("players");
         messages = db.getCollection("messages");
-        messages.drop();    // According to exercise 'mongo-storage-wall' all messages should be dropped in initialization
 
         //setup default rooms if not present in db
         this.addRoom(new Point3(0, 0, 0).getPositionString(), new RoomRecord(
