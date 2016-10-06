@@ -1,4 +1,4 @@
-package cloud.cave.common;
+package cloud.cave.manual;
 
 import com.rabbitmq.client.*;
 
@@ -14,7 +14,7 @@ public class RabbitMaltaQuest {
     public static void main(String[] args) {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost("localhost");
+            factory.setHost("192.168.99.100");
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 
@@ -39,7 +39,7 @@ class RabbitMaltaQuestRecieve {
     public static void main(String[] args) {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost("localhost");
+            factory.setHost("192.168.99.100");
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 
@@ -53,13 +53,18 @@ class RabbitMaltaQuestRecieve {
                         throws IOException {
                     String message = new String(body, "UTF-8");
                     System.out.println(" [x] Received '" + message + "'");
+                    try {
+                        channel.close();
+                    } catch (TimeoutException e) {
+                        e.printStackTrace();
+                    }
+                    connection.close();
                 }
             };
 
             channel.basicConsume(QUEUE_NAME, true, consumer);
 
-            channel.close();
-            connection.close();
+
 
         } catch (Exception e) {
             e.printStackTrace();

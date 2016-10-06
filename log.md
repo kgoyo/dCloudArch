@@ -317,7 +317,9 @@ Run the daemon on same virtual network
     docker run -ti -p 37123:37123 -v /home/amao/workspace/ivy2_docker/:/root/.ivy2 --net repl_network andreasmalling/dcloudarch_css-14 daemon -Dcpf=mongo-replica-set.cpf
 
 ### Observations:
- - You can't run `find()` on a secondary machine
+ - You can't run `find()` on a secondary machine (unless you do it)
+    docker logs -f [container-name]
+ show the console output without during interactive.
 
 when connecting to the replica set with the mongoclient we have to use the hostname defined by the replicaset
 this also means that the daemon has to be run in a docker container in the same network as the mongo containers
@@ -335,3 +337,6 @@ this also means that the daemon has to be run in a docker container in the same 
 the rabbitmq image we use:
     docker pull rabbitmq:3.6.5-management
 map to port 15672
+    docker run -d -p 15672:15672 -p5672:5672 rabbitmq:3.6.5-management
+
+we dont need to close our connections according to Henrik
