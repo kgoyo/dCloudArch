@@ -325,3 +325,13 @@ this also means that the daemon has to be run in a docker container in the same 
 ## Excercise 'availability-failover'
 
     docker run -ti -v /home/amao/workspace/ivy2_docker/:/root/.ivy2 --net repl_network andreasmalling/dcloudarch_css-14 load.mongo -Dcpf=availability-failover.cpf
+
+-------------------------------------------------------------------
+# iteration 4
+[Scalability, Messaging and Session Management](https://cs.au.dk/~baerbak/c/cloud/mandatory4.html)
+
+## Exercise 'rabbitmq-requesthandler'
+
+the rabbitmq image we use:
+    docker pull rabbitmq:3.6.5-management
+map to port 15672
