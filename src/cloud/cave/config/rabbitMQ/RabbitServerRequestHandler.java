@@ -69,12 +69,13 @@ public class RabbitServerRequestHandler implements ServerRequestHandler {
                         .build();
 
                 String message = new String(delivery.getBody());
+                System.out.println("--> [REQUEST] " + message); //print request like the old requesthandler
                 JSONObject request = (JSONObject) parser.parse(message);
 
                 //handle request
                 JSONObject responseJson = objectManager.getInvoker().handleRequest(request);
-                String response = responseJson.toJSONString(); //FIXME maybe use regulare toString()
-
+                String response = responseJson.toJSONString();
+                System.out.println("--< [REPLY] " + response);
                 channel.basicPublish( "", props.getReplyTo(), replyProps, response.getBytes());
 
                 channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
