@@ -328,6 +328,10 @@ this also means that the daemon has to be run in a docker container in the same 
 
     docker run -ti -v /home/amao/workspace/ivy2_docker/:/root/.ivy2 --net repl_network andreasmalling/dcloudarch_css-14 load.mongo -Dcpf=availability-failover.cpf
 
+To get log, use tail with follow flag, and piped to grep for filtering
+
+    tail -F skycave.log skycave.log.1 skycave.log.2 | grep "ERROR"
+
 -------------------------------------------------------------------
 # iteration 4
 [Scalability, Messaging and Session Management](https://cs.au.dk/~baerbak/c/cloud/mandatory4.html)
