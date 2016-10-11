@@ -20,7 +20,8 @@ import cloud.cave.service.*;
  * @author Henrik Baerbak Christensen, Aarhus University.
  * 
  */
-public class CaveServant implements Cave, Servant {
+public class
+CaveServant implements Cave, Servant {
 
   private ObjectManager objectManager;
   
