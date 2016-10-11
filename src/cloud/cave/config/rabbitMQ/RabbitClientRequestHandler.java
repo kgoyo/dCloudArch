@@ -17,7 +17,6 @@ import java.util.concurrent.TimeoutException;
  */
 public class RabbitClientRequestHandler implements ClientRequestHandler {
     private static final String RPC_QUEUE_NAME = "skycave_rpc_queue";
-    private static final String RPC_EXCHANGE_NAME = "skycave_exchange";
     private Connection connection;
     private Channel channel;
     private String replyQueueName;
@@ -36,7 +35,7 @@ public class RabbitClientRequestHandler implements ClientRequestHandler {
                 .build();
         String message = requestJson.toJSONString();
         try {
-            channel.basicPublish(RPC_EXCHANGE_NAME, RPC_QUEUE_NAME, props, message.getBytes());
+            channel.basicPublish("", RPC_QUEUE_NAME, props, message.getBytes());
 
 
         while (true) {
