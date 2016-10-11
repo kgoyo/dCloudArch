@@ -6,7 +6,7 @@ SKYCAVE_CLIENTREQUESTHANDLER_IMPLEMENTATION = cloud.cave.config.rabbitMQ.RabbitC
 SKYCAVE_SERVERREQUESTHANDLER_IMPLEMENTATION = cloud.cave.config.rabbitMQ.RabbitServerRequestHandler
 
 # === Configure for server to run on localhost
-SKYCAVE_APPSERVER = rabbit:5672
+SKYCAVE_APPSERVER = 146.185.152.244:5672
 
 # === Inject test doubles for all delegates (Note IP endpoints are dummies)
 

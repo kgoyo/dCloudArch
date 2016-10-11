@@ -1,0 +1,4 @@
+< session-database.cpf
+
+# === Configure for server to run on localhost
+SKYCAVE_APPSERVER = localhost:5672
