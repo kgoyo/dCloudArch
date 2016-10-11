@@ -1,0 +1,30 @@
+# Setting everything for socket based connection on
+# LocalHost with (mostly) test doubles
+
+# === Configure for socket communication on client and app server side
+SKYCAVE_CLIENTREQUESTHANDLER_IMPLEMENTATION = cloud.cave.config.rabbitMQ.RabbitClientRequestHandler
+SKYCAVE_SERVERREQUESTHANDLER_IMPLEMENTATION = cloud.cave.config.rabbitMQ.RabbitServerRequestHandler
+
+# === Configure for server to run on localhost
+SKYCAVE_APPSERVER = localhost:5672
+
+# === Inject test doubles for all delegates (Note IP endpoints are dummies)
+
+# = Subscription service
+SKYCAVE_SUBSCRIPTION_IMPLEMENTATION = cloud.cave.service.StandardSubscriptionService
+SKYCAVE_SUBSCRIPTIONSERVER = skycave.baerbak.com:7654
+
+# = Cave storage
+SKYCAVE_CAVESTORAGE_IMPLEMENTATION = cloud.cave.service.MongoStorage
+SKYCAVE_DBSERVER = mongo:27017
+
+# = Weather service
+SKYCAVE_WEATHER_IMPLEMENTATION = cloud.cave.service.StandardWeatherService
+SKYCAVE_WEATHERSERVER = caveweather.baerbak.com:6745
+
+# = Inspector implementation - defaults to the simplest in memory one
+SKYCAVE_INSPECTOR_IMPLEMENTATION = cloud.cave.server.SimpleInspector
+SKYCAVE_INSPECTORSERVER = notused:0
+
+SKYCAVE_PLAYERSESSIONCACHE_IMPLEMENTATION = cloud.cave.server.MongoSessionCache
+SKYCAVE_PLAYERSESSIONCACHESERVER = mongo:27017
