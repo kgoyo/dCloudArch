@@ -11,6 +11,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
+import org.slf4j.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class MongoStorage implements CaveStorage {
     private MongoCollection<Document> rooms;
     private MongoCollection<Document> players;
     private MongoCollection<Document> messages;
+    private Logger logger;
 
     @Override
     public RoomRecord getRoom(String positionString) {
@@ -50,6 +52,7 @@ public class MongoStorage implements CaveStorage {
 
             return res;
         } catch (MongoSocketReadException | MongoQueryException e) {
+            logger.error("[55] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
             throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
     }
@@ -68,6 +71,7 @@ public class MongoStorage implements CaveStorage {
         try {
             rooms.insertOne(newRoom);
         } catch (MongoSocketReadException e) {
+            logger.error("[74] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
             throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
 
@@ -111,6 +115,7 @@ public class MongoStorage implements CaveStorage {
 
             return messageList;
         } catch (MongoSocketReadException | MongoQueryException e) {
+            logger.error("[118] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
             throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
     }
@@ -127,6 +132,7 @@ public class MongoStorage implements CaveStorage {
 
             messages.insertOne(newMessage);
         } catch (MongoSocketReadException | MongoQueryException e) {
+            logger.error("[135] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
             throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
     }
@@ -143,6 +149,7 @@ public class MongoStorage implements CaveStorage {
 
             return documentToPlayerRecord(documents.get(0));
         } catch(MongoSocketReadException | MongoQueryException e) {
+            logger.error("[152] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
             throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
     }
@@ -176,6 +183,7 @@ public class MongoStorage implements CaveStorage {
                     new Document("$set", playerRecordToDocument(record)),
                     new UpdateOptions().upsert(true));
         } catch(MongoSocketReadException e) {
+            logger.error("[186] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
             throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
     }
@@ -194,6 +202,7 @@ public class MongoStorage implements CaveStorage {
 
             return res;
         } catch(MongoSocketReadException | MongoQueryException e) {
+            logger.error("[205] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
             throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
     }
@@ -205,6 +214,7 @@ public class MongoStorage implements CaveStorage {
             ArrayList<Document> documents = players.find(sessionFilter).into(new ArrayList<Document>());
             return documents.size();
         } catch(MongoSocketReadException | MongoQueryException e) {
+            logger.error("[217] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
             throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
         }
     }
@@ -212,6 +222,7 @@ public class MongoStorage implements CaveStorage {
     @Override
     public void initialize(ObjectManager objectManager, ServerConfiguration config) {
         this.serverConfiguration = config;
+        this.logger = LoggerFactory.getLogger(MongoStorage.class);
 
         /*
         MongoClientOptions mco = MongoClientOptions.builder()
