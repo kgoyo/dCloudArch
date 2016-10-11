@@ -337,6 +337,6 @@ this also means that the daemon has to be run in a docker container in the same 
 the rabbitmq image we use:
     docker pull rabbitmq:3.6.5-management
 map to port 15672
-    docker run -d -p 15672:15672 -p5672:5672 rabbitmq:3.6.5-management
+    docker run -d -p 15672:15672 -p 5672:5672 rabbitmq:3.6.5-management
 
 we dont need to close our connections according to Henrik
