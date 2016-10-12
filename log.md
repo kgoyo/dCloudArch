@@ -304,7 +304,7 @@ Enter the mongo shell on mr1
 
 Setup config for `rs.initiate();`
 
-    config = {"_id" : "rs0", "members" : [{"_id" : 0, "host" : "mr1:27017"},{"_id" : 1,"host" : "mr2:27017"},{"_id" : 2,"host" : "mr3:27017"}]}
+``config = {"_id" : "rs0", "members" : [{"_id" : 0, "host" : "mr1:27017"},{"_id" : 1,"host" : "mr2:27017"},{"_id" : 2,"host" : "mr3:27017"}]}``
 
 
 Initiate voting by running
@@ -339,11 +339,29 @@ To get log, use tail with follow flag, and piped to grep for filtering
 ## Exercise 'rabbitmq-requesthandler'
 
 the rabbitmq image we use:
+
     docker pull rabbitmq:3.6.5-management
+
 map to port 15672
+
     docker run -d -p 15672:15672 -p 5672:5672 rabbitmq:3.6.5-management
 
 we dont need to close our connections according to Henrik
 
 
-## Exercise 
+## Exercise 'rabbitmq-cluster'
+Inspired by [this](https://sllabres.wordpress.com/2015/05/15/docker-rabbitmq-clustering-high-availability-federation/)
+
+Run the compose file `docker-compose-mqc.yml` and connect with cmd cpf `rabbitmq-requesthandler.cpf`
+
+To get rabbits in cluster, access *rabbit2* from the docker-compose with `docker exec -ti [rabbit2 name] /bin/bash` and execute the following commands:
+
+    rabbitmqctl stop_app
+    rabbitmqctl join_cluster rabbit@rabbit1
+    rabbitmqctl start_app
+
+Finally you need to setup a policy for the rpc queue, setting the `ha-mode` to `all` through the web interface of RabbitMQ
+
+-------------------------------------------------------------------
+# iteration 5
+[Performance](https://cs.au.dk/~baerbak/c/cloud/mandatory5.html)
