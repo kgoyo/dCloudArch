@@ -1,0 +1,40 @@
+version: '2'
+services:
+  skycave:
+    build: .
+    image: andreasmalling/dcloudarch_css-14
+    # Dependant on the 'mongo' container running, since it's our storage
+    depends_on:
+      - mongo
+      - rabbit1
+      - rabbit2
+
+    # Commands for our entry-point.sh
+    command: daemon -Dcpf=rabbitmq-cluster.cpf
+
+  rabbit1:
+    image: rabbitmq:3.6.5-management
+    hostname: rabbit1
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "CLOUDARCH"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  rabbit2:
+    image: rabbitmq:3.6.5-management
+    hostname: rabbit2
+    links:
+      - rabbit1
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "CLOUDARCH"
+
+  mongo:
+    image: mongo:3.2.9
+
+    # Local mount of database, so data is persistent and available between containers
+    volumes:
+      - /data/db
+
+    # Mongod commands
+    command: --smallfiles --noprealloc

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class RabbitServerRequestHandler implements ServerRequestHandler {
     private static final String RPC_QUEUE_NAME = "skycave_rpc_queue";
+    private static final String RPC_EXCHANGE_NAME = "skycave_exchange";
     private QueueingConsumer consumer;
     private Channel channel;
     private ObjectManager objectManager;
@@ -43,7 +44,11 @@ public class RabbitServerRequestHandler implements ServerRequestHandler {
             connection = factory.newConnection();
             channel = connection.createChannel();
 
+            channel.exchangeDeclare(RPC_EXCHANGE_NAME, "direct");
+
             channel.queueDeclare(RPC_QUEUE_NAME, false, false, false, null);
+
+            channel.queueBind(RPC_QUEUE_NAME, RPC_EXCHANGE_NAME, "");
 
             channel.basicQos(1);
 

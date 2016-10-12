@@ -344,3 +344,6 @@ map to port 15672
     docker run -d -p 15672:15672 -p 5672:5672 rabbitmq:3.6.5-management
 
 we dont need to close our connections according to Henrik
+
+
+## Exercise 
