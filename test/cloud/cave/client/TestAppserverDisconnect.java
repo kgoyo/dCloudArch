@@ -34,9 +34,7 @@ public class TestAppserverDisconnect {
     @Before
     public void setUp() throws Exception {
         ObjectManager objMgr = CommonCaveTests.createTestDoubledConfiguredCave();
-
         crh = new OnlyLoginClientRequestHandler(objMgr.getInvoker());
-
         caveProxy = new CaveProxy(crh);
     }
 
