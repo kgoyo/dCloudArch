@@ -29,6 +29,7 @@ public class MongoStorage implements CaveStorage {
     private static final String REGION = "region";
     private static final String MESSAGE_ID = "messageid";
     private static final String MESSAGE = "message";
+    private static final int PAGESIZE = 10;
 
     private ServerConfiguration serverConfiguration;
     private MongoClient mongo;
@@ -95,16 +96,17 @@ public class MongoStorage implements CaveStorage {
     }
 
     @Override
-    public List<String> getMessageList(String positionString) {
+    public List<String> getMessageList(String positionString, int page) {
         try {
             int ascendingOrder = 1;
 
             FindIterable<Document> messageIter = messages.find(new Document(POINT, positionString))
-                                       .sort(new Document(MESSAGE_ID, ascendingOrder));
+                                       .sort(new Document(MESSAGE_ID, ascendingOrder))
+                                       .skip(page*PAGESIZE)
+                                       .limit(PAGESIZE);
                                        //.into(new ArrayList<Document>());
 
             List messageList = new ArrayList<String>();
-
             messageIter.forEach(new Block<Document>(){
                 @Override
                 public void apply(final Document document){

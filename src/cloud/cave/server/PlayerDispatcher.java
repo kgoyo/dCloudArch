@@ -140,7 +140,8 @@ public class PlayerDispatcher implements Dispatcher {
 
       // === GET MESSAGE LIST
       else if (methodKey.equals(MarshalingKeys.GET_MESSAGE_LIST_METHOD_KEY)) {
-        List<String> list = player.getMessageList();
+        int page = Integer.parseInt(parameter1);
+        List<String> list = player.getMessageList(page);
         String[] asArray = new String[list.size()];
         list.toArray(asArray);
 

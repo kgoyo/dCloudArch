@@ -33,7 +33,7 @@ public class TestWall {
   @Test
   public void shouldWriteToAndReadWall() {
     player.addMessage("This is message no. 1");
-    List<String> wallContents = player.getMessageList();
+    List<String> wallContents = player.getMessageList(0);
 
     assertThat( wallContents.size(), is(1));
     assertThat( wallContents.get(0), containsString("[Mikkel] This is message no. 1"));
@@ -43,7 +43,7 @@ public class TestWall {
   public void shouldWriteToAndReadWall2() {
     player.addMessage("This is message no. 1");
     player.addMessage("This is message no. 2");
-    List<String> wallContents = player.getMessageList();
+    List<String> wallContents = player.getMessageList(0);
 
     assertThat( wallContents.size(), is(2));
     assertThat( wallContents.get(0), containsString("[Mikkel] This is message no. 1"));
@@ -56,7 +56,7 @@ public class TestWall {
     player.move(Direction.NORTH);
     player.addMessage("This is message no. 2");
     
-    List<String> wallContents = player.getMessageList();
+    List<String> wallContents = player.getMessageList(0);
 
     assertThat( wallContents.size(), is(1));
     assertThat( wallContents.get(0), containsString("[Mikkel] This is message no. 2"));
@@ -70,7 +70,7 @@ public class TestWall {
 	  
     player.addMessage("This is message no. 1");
     player2.addMessage("This is message no. 2");
-    List<String> wallContents = player.getMessageList();
+    List<String> wallContents = player.getMessageList(0);
 
     assertThat( wallContents.size(), is(2));
     assertThat( wallContents.get(0), containsString("[Mikkel] This is message no. 1"));
@@ -80,7 +80,7 @@ public class TestWall {
 
   @Test
   public void shouldBeEmptyWall() {
-    List<String> wallContents = player.getMessageList();
+    List<String> wallContents = player.getMessageList(0);
 
     assertThat( wallContents.size(), is(0));
   }

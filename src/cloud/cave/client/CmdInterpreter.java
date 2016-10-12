@@ -26,6 +26,7 @@ public class CmdInterpreter {
   
   private PrintStream systemOut;
   private InputStream systemIn;
+  private int page;
 
   /**
    * Construct the interpreter.
@@ -67,6 +68,8 @@ public class CmdInterpreter {
           .println("*** The previous session will be disconnected. ***");
     }
     player = loginResult.getPlayer();
+
+    this.page = 0;
   }
 
   /**
@@ -96,9 +99,14 @@ public class CmdInterpreter {
             if (tokens[0].length() == 1) {
               char primaryCommand = line.charAt(0);
               handleSingleCharCommand(primaryCommand);
-
+              page = 0; //reset page, no singleCharCommand is read.
             } else {
-              handleMultipleCharCommand(tokens[0], tokens);
+              String primaryCommand = tokens[0];
+              if (!primaryCommand.equals("read")) {
+                page = 0; //reset if multichar command is not read
+              }
+              handleMultipleCharCommand(primaryCommand, tokens);
+
             }
             systemOut.println();
           }
@@ -169,10 +177,11 @@ public class CmdInterpreter {
       systemOut.println(message);
 
     } else if (command.equals("read")) {
-      List<String> wall = player.getMessageList();
+      List<String> wall = player.getMessageList(page);
       for (String s : wall) {
           systemOut.println(s);
       }
+      page++; //increment page for next call
 
     } else if (command.equals("sys")) {
       systemOut.println("System information:");

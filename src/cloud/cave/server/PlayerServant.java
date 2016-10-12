@@ -139,8 +139,8 @@ public class PlayerServant implements Player {
   }
 
   @Override
-  public List<String> getMessageList() {
-    return storage.getMessageList(getPosition()); 
+  public List<String> getMessageList(int page) {
+    return storage.getMessageList(getPosition(), page);
   }
 
   @Override

@@ -113,8 +113,8 @@ class SpyCaveStorage implements CaveStorage {
     return decoratee.getSetOfExitsFromRoom(positionString);
   }
   
-  public List<String> getMessageList(String positionString) {
-	  return decoratee.getMessageList(positionString);
+  public List<String> getMessageList(String positionString, int page) {
+	  return decoratee.getMessageList(positionString, page);
   }
 
   @Override

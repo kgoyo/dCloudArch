@@ -28,6 +28,8 @@ public class FakeCaveStorage implements CaveStorage {
   
   Map<String,List<String>> wallMap;
 
+  private static final int PAGESIZE = 10;
+
   @Override
   public void initialize(ObjectManager objMgr, ServerConfiguration config) {
     this.serverConfiguration = config;
@@ -84,13 +86,22 @@ public class FakeCaveStorage implements CaveStorage {
   }
   
   @Override
-  public List<String> getMessageList(String positionString) {
-	  return wallMap.get(positionString);
+  public List<String> getMessageList(String positionString, int page) {
+      int fromIndex = page*PAGESIZE;
+      int toIndex = (page+1)*PAGESIZE;
+      List<String> wall = wallMap.get(positionString);
+      if (toIndex > wall.size()) {
+        toIndex = wall.size(); //this might make fromIndex larger than toIndex
+        if (fromIndex > toIndex) {
+          return new ArrayList<>();
+        }
+      }
+	  return wall.subList(fromIndex, toIndex);
   }
 
   @Override
   public void addMessage(String positionString, String messageString) {
-    List list = getMessageList(positionString);
+    List list = wallMap.get(positionString);
     list.add(messageString);
   }
 

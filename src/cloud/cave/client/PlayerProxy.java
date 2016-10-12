@@ -203,8 +203,8 @@ public class PlayerProxy implements Player, ClientProxy, Requestor {
   }
 
   @Override
-  public List<String> getMessageList() {
-    JSONObject requestJson = createRequestObject(MarshalingKeys.GET_MESSAGE_LIST_METHOD_KEY, null);
+  public List<String> getMessageList(int page) {
+    JSONObject requestJson = createRequestObject(MarshalingKeys.GET_MESSAGE_LIST_METHOD_KEY, page+"");
     JSONObject replyJson = requestAndAwaitReply(requestJson);
     List<String> wall = new ArrayList<String>();
     JSONArray array = (JSONArray) replyJson.get(MarshalingKeys.RETURNVALUE_TAIL_KEY);
@@ -245,6 +245,8 @@ public class PlayerProxy implements Player, ClientProxy, Requestor {
         Marshaling.createRequestObject(playerID, sessionID, methodKey, parameter);
     return requestJson;
   }
+
+
 
   private JSONObject requestAndAwaitReply(JSONObject requestJson) {
     JSONObject replyJson = ClientCommon.requestAndAwaitReply(crh, requestJson);

@@ -158,7 +158,7 @@ public interface Player {
    * messages appearing at lower indices
    * 
    */
-  List<String> getMessageList();
+  List<String> getMessageList(int page);
 
   /**
    * Return the physical weather situation right now in the location that this

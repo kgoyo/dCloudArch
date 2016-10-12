@@ -53,7 +53,7 @@ public interface CaveStorage extends ExternalService {
    *          position of the room whose wall is wanted
    * @return list of messages on the wall for the given room position
    */
-  List<String> getMessageList(String positionString);
+  List<String> getMessageList(String positionString, int page);
 
   /**
    * adds messages to the wall at a given position
