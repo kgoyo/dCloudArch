@@ -49,6 +49,8 @@
       <dependency org="com.rabbitmq"
                   name="amqp-client"
                   rev="3.6.5"/>
+      <!-- https://mvnrepository.com/artifact/net.spy/spymemcached -->
+      <dependency org="net.spy" name="spymemcached" rev="2.12.1"/>
 
 
 
