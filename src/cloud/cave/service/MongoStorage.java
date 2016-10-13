@@ -39,27 +39,22 @@ public class MongoStorage implements CaveStorage {
     private Logger logger;
 
     @Override
-    public RoomRecord getRoom(String positionString) {
+    public RoomRecord getRoom(String positionString) throws MongoException {
         Document roomFilter = new Document().append(POINT, positionString);
-        try {
-            ArrayList<Document> documents = rooms.find(roomFilter).limit(1).into(new ArrayList<Document>());
+        ArrayList<Document> documents = rooms.find(roomFilter).limit(1).into(new ArrayList<Document>());
 
-            //if no room on given position can be found
-            if (documents.size() == 0)
-                return null;
+        //if no room on given position can be found
+        if (documents.size() == 0)
+            return null;
 
-            String description = (String) documents.get(0).get(DESCRIPTION);
-            RoomRecord res = new RoomRecord(description);
+        String description = (String) documents.get(0).get(DESCRIPTION);
+        RoomRecord res = new RoomRecord(description);
 
-            return res;
-        } catch (MongoSocketReadException | MongoQueryException e) {
-            logger.error("[55] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
-            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
-        }
+        return res;
     }
 
     @Override
-    public boolean addRoom(String positionString, RoomRecord description) {
+    public boolean addRoom(String positionString, RoomRecord description) throws MongoException{
         //check if a room exists on given position, and fail if so
         if (getRoom(positionString) != null)
             return false;
@@ -69,12 +64,7 @@ public class MongoStorage implements CaveStorage {
         newRoom.append(DESCRIPTION, description.description);
         //newRoom.append(MESSAGES,new ArrayList<Document>());
 
-        try {
-            rooms.insertOne(newRoom);
-        } catch (MongoSocketReadException e) {
-            logger.error("[74] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
-            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
-        }
+        rooms.insertOne(newRoom);
 
         return true;
     }
@@ -96,64 +86,49 @@ public class MongoStorage implements CaveStorage {
     }
 
     @Override
-    public List<String> getMessageList(String positionString, int page) {
-        try {
-            int ascendingOrder = 1;
+    public List<String> getMessageList(String positionString, int page) throws MongoException {
+        int ascendingOrder = 1;
 
-            FindIterable<Document> messageIter = messages.find(new Document(POINT, positionString))
-                                       .sort(new Document(MESSAGE_ID, ascendingOrder))
-                                       .skip(page*PAGESIZE)
-                                       .limit(PAGESIZE);
-                                       //.into(new ArrayList<Document>());
+        FindIterable<Document> messageIter = messages.find(new Document(POINT, positionString))
+                                   .sort(new Document(MESSAGE_ID, ascendingOrder))
+                                   .skip(page*PAGESIZE)
+                                   .limit(PAGESIZE);
+                                   //.into(new ArrayList<Document>());
 
-            List messageList = new ArrayList<String>();
-            messageIter.forEach(new Block<Document>(){
-                @Override
-                public void apply(final Document document){
-                    String desc = (String) document.get(MESSAGE);
-                    messageList.add(desc);
-                }
-            });
+        List messageList = new ArrayList<String>();
+        messageIter.forEach(new Block<Document>(){
+            @Override
+            public void apply(final Document document){
+                String desc = (String) document.get(MESSAGE);
+                messageList.add(desc);
+            }
+        });
 
-            return messageList;
-        } catch (MongoSocketReadException | MongoQueryException e) {
-            logger.error("[118] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
-            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
-        }
+        return messageList;
     }
 
     @Override
-    public void addMessage(String positionString, String messageString) {
-        try {
-            // Get current count of messages on position
-            long count = messages.count(new Document(POINT, positionString));
+    public void addMessage(String positionString, String messageString) throws MongoException {
+        // Get current count of messages on position
+        long count = messages.count(new Document(POINT, positionString));
 
-            Document newMessage = new Document(POINT, positionString)
-                                       .append(MESSAGE_ID, count+1)
-                                       .append(MESSAGE, messageString);
+        Document newMessage = new Document(POINT, positionString)
+                                   .append(MESSAGE_ID, count+1)
+                                   .append(MESSAGE, messageString);
 
-            messages.insertOne(newMessage);
-        } catch (MongoSocketReadException | MongoQueryException e) {
-            logger.error("[135] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
-            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
-        }
+        messages.insertOne(newMessage);
     }
 
     @Override
-    public PlayerRecord getPlayerByID(String playerID) {
+    public PlayerRecord getPlayerByID(String playerID) throws MongoException {
         Document playerFilter = new Document().append(PLAYERID, playerID);
-        try {
-            ArrayList<Document> documents = players.find(playerFilter).limit(1).into(new ArrayList<Document>());
+        ArrayList<Document> documents = players.find(playerFilter).limit(1).into(new ArrayList<Document>());
 
-            //if no room on given position can be found
-            if (documents.size() == 0)
-                return null;
+        //if no room on given position can be found
+        if (documents.size() == 0)
+            return null;
 
-            return documentToPlayerRecord(documents.get(0));
-        } catch(MongoSocketReadException | MongoQueryException e) {
-            logger.error("[152] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
-            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
-        }
+        return documentToPlayerRecord(documents.get(0));
     }
 
     private PlayerRecord documentToPlayerRecord(Document document) {
@@ -179,34 +154,25 @@ public class MongoStorage implements CaveStorage {
     }
 
     @Override
-    public void updatePlayerRecord(PlayerRecord record) {
-        try {
-            players.updateOne(new Document(PLAYERID, record.getPlayerID()),
-                    new Document("$set", playerRecordToDocument(record)),
-                    new UpdateOptions().upsert(true));
-        } catch(MongoSocketReadException e) {
-            logger.error("[186] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
-            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
-        }
+    public void updatePlayerRecord(PlayerRecord record) throws MongoException {
+        players.updateOne(new Document(PLAYERID, record.getPlayerID()),
+                new Document("$set", playerRecordToDocument(record)),
+                new UpdateOptions().upsert(true));
     }
 
     @Override
-    public List<PlayerRecord> computeListOfPlayersAt(String positionString) {
+    public List<PlayerRecord> computeListOfPlayersAt(String positionString) throws MongoException {
         Document positionFilter = new Document().append(POINT, positionString);
-        try {
-            ArrayList<Document> documents = players.find(positionFilter).into(new ArrayList<Document>());
 
-            ArrayList<PlayerRecord> res = new ArrayList<>();
+        ArrayList<Document> documents = players.find(positionFilter).into(new ArrayList<Document>());
 
-            for (Document d: documents) {
-                res.add(documentToPlayerRecord(d));
-            }
+        ArrayList<PlayerRecord> res = new ArrayList<>();
 
-            return res;
-        } catch(MongoSocketReadException | MongoQueryException e) {
-            logger.error("[205] MongoStorage caught exception: " + e.getClass().getCanonicalName(), e);
-            throw new CaveStorageUnavailableException("MongoDB is \"probably\" having an election");
+        for (Document d: documents) {
+            res.add(documentToPlayerRecord(d));
         }
+
+        return res;
     }
 
     @Override
@@ -226,13 +192,6 @@ public class MongoStorage implements CaveStorage {
         this.serverConfiguration = config;
         this.logger = LoggerFactory.getLogger(MongoStorage.class);
 
-        /*
-        MongoClientOptions mco = MongoClientOptions.builder()
-                                                        //.connectTimeout(5000)
-                                                        .readPreference(ReadPreference.secondaryPreferred())
-                                                        .build();
-        */
-
         // Add all addresses for the replicas
         ArrayList<ServerAddress> addrs = new ArrayList<>();
         for (int i = 0 ; i < config.size(); i++ ){
@@ -240,11 +199,6 @@ public class MongoStorage implements CaveStorage {
             ServerAddress addr = new ServerAddress(data.getHostName(),data.getPortNumber());
             addrs.add(addr);
         }
-
-        /*
-        ServerData data = config.get(0);
-        ServerAddress addr = new ServerAddress(data.getHostName(),data.getPortNumber());
-        */
 
         mongo = new MongoClient(addrs);
 
