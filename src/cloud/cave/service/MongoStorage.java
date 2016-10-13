@@ -104,7 +104,6 @@ public class MongoStorage implements CaveStorage {
                                        .sort(new Document(MESSAGE_ID, ascendingOrder))
                                        .skip(page*PAGESIZE)
                                        .limit(PAGESIZE);
-                                       //.into(new ArrayList<Document>());
 
             List messageList = new ArrayList<String>();
             messageIter.forEach(new Block<Document>(){

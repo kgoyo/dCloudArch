@@ -12,7 +12,7 @@ services:
             - mongo
 
         # Commands for our entry-point.sh
-        command: daemon
+        command: daemon -Dcpf=mongo-storage.cpf
     mongo:
         image: mongo:3.2.9
         # Local mount of database, so data is persistent and available between containers
