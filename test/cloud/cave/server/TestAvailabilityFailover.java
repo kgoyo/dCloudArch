@@ -13,6 +13,7 @@ import cloud.cave.domain.Direction;
 import cloud.cave.domain.Player;
 import cloud.cave.doubles.*;
 import cloud.cave.service.CaveStorage;
+import cloud.cave.service.MongoStorageDecorator;
 import cloud.cave.service.StandardSubscriptionService;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -22,7 +23,7 @@ import org.junit.rules.ExpectedException;
  */
 public class TestAvailabilityFailover {
 
-    private SaboteurStorageCaveStorageDecorator storage;
+    private CaveStorage storage;
     private Cave cave;
     private Player player;
 
@@ -31,7 +32,7 @@ public class TestAvailabilityFailover {
 
     @Before
     public void setup() {
-        storage = new SaboteurStorageCaveStorageDecorator(5,new FakeCaveStorage());
+        storage = new MongoStorageDecorator(new SaboteurStorageCaveStorageDecorator(5,new FakeCaveStorage()));
         CaveServerFactory factory = new StorageTestDoubleFactory(storage);
         ObjectManager objMgr = new StandardObjectManager(factory);
         cave = objMgr.getCave();
@@ -43,6 +44,7 @@ public class TestAvailabilityFailover {
         player.move(Direction.SOUTH); //cant move south 1 request
         exception.expect(CaveStorageUnavailableException.class);
         player.move(Direction.SOUTH); //cant move south 1 request
+
     }
 
     @Test
@@ -78,5 +80,19 @@ public class TestAvailabilityFailover {
         player.getPlayersHere();
         exception.expect(CaveStorageUnavailableException.class);
         player.getPlayersHere();
+    }
+
+    @Test
+    public void playerCount() {
+        storage.computeCountOfActivePlayers();
+        exception.expect(CaveStorageUnavailableException.class);
+        storage.computeCountOfActivePlayers();
+    }
+
+    @Test
+    public void loginSecondPlayer() {
+        storage.getPlayerByID("user-001");
+        exception.expect(CaveStorageUnavailableException.class);
+        storage.getPlayerByID("user-001");
     }
 }

@@ -1,12 +1,12 @@
 package cloud.cave.doubles;
 
-import cloud.cave.common.CaveStorageUnavailableException;
 import cloud.cave.config.ObjectManager;
 import cloud.cave.domain.Direction;
 import cloud.cave.server.common.PlayerRecord;
 import cloud.cave.server.common.RoomRecord;
 import cloud.cave.server.common.ServerConfiguration;
 import cloud.cave.service.CaveStorage;
+import com.mongodb.MongoException;
 
 import java.util.List;
 
@@ -27,8 +27,8 @@ public class SaboteurStorageCaveStorageDecorator implements CaveStorage {
     @Override
     public RoomRecord getRoom(String positionString) {
         counter++;
-        if (counter == timeBeforeFail) {
-            throw new CaveStorageUnavailableException("");
+        if (counter >= timeBeforeFail) {
+            throw new MongoException("");
         } else {
             return storage.getRoom(positionString);
         }
@@ -37,8 +37,8 @@ public class SaboteurStorageCaveStorageDecorator implements CaveStorage {
     @Override
     public boolean addRoom(String positionString, RoomRecord description) {
         counter++;
-        if (counter == timeBeforeFail) {
-            throw new CaveStorageUnavailableException("");
+        if (counter >= timeBeforeFail) {
+            throw new MongoException("");
         } else {
             return storage.addRoom(positionString, description);
         }
@@ -47,8 +47,8 @@ public class SaboteurStorageCaveStorageDecorator implements CaveStorage {
     @Override
     public List<Direction> getSetOfExitsFromRoom(String positionString) {
         counter++;
-        if (counter == timeBeforeFail) {
-            throw new CaveStorageUnavailableException("");
+        if (counter >= timeBeforeFail) {
+            throw new MongoException("");
         } else {
             return storage.getSetOfExitsFromRoom(positionString);
         }
@@ -57,8 +57,8 @@ public class SaboteurStorageCaveStorageDecorator implements CaveStorage {
     @Override
     public List<String> getMessageList(String positionString, int page) {
         counter++;
-        if (counter == timeBeforeFail) {
-            throw new CaveStorageUnavailableException("");
+        if (counter >= timeBeforeFail) {
+            throw new MongoException("");
         } else {
             return storage.getMessageList(positionString, page);
         }
@@ -67,8 +67,8 @@ public class SaboteurStorageCaveStorageDecorator implements CaveStorage {
     @Override
     public void addMessage(String positionString, String messageString) {
         counter++;
-        if (counter == timeBeforeFail) {
-            throw new CaveStorageUnavailableException("");
+        if (counter >= timeBeforeFail) {
+            throw new MongoException("");
         } else {
             storage.addMessage(positionString, messageString);
         }
@@ -77,8 +77,8 @@ public class SaboteurStorageCaveStorageDecorator implements CaveStorage {
     @Override
     public PlayerRecord getPlayerByID(String playerID) {
         counter++;
-        if (counter == timeBeforeFail) {
-            throw new CaveStorageUnavailableException("");
+        if (counter >= timeBeforeFail) {
+            throw new MongoException("");
         } else {
             return storage.getPlayerByID(playerID);
         }
@@ -87,8 +87,8 @@ public class SaboteurStorageCaveStorageDecorator implements CaveStorage {
     @Override
     public void updatePlayerRecord(PlayerRecord record) {
         counter++;
-        if (counter == timeBeforeFail) {
-            throw new CaveStorageUnavailableException("");
+        if (counter >= timeBeforeFail) {
+            throw new MongoException("");
         } else {
             storage.updatePlayerRecord(record);
         }
@@ -97,8 +97,8 @@ public class SaboteurStorageCaveStorageDecorator implements CaveStorage {
     @Override
     public List<PlayerRecord> computeListOfPlayersAt(String positionString) {
         counter++;
-        if (counter == timeBeforeFail) {
-            throw new CaveStorageUnavailableException("");
+        if (counter >= timeBeforeFail) {
+            throw new MongoException("");
         } else {
             return storage.computeListOfPlayersAt(positionString);
         }
@@ -107,8 +107,8 @@ public class SaboteurStorageCaveStorageDecorator implements CaveStorage {
     @Override
     public int computeCountOfActivePlayers() {
         counter++;
-        if (counter == timeBeforeFail) {
-            throw new CaveStorageUnavailableException("");
+        if (counter >= timeBeforeFail) {
+            throw new MongoException("");
         } else {
             return storage.computeCountOfActivePlayers();
         }
