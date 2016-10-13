@@ -24,17 +24,18 @@ public class StandardSessionCache implements PlayerSessionCache {
 
     @Override
     public Player get(String playerID) {
+        // The constructor refresh the data from storage
         return new PlayerServant(playerID, objectManager);
     }
 
     @Override
     public void add(String playerID, Player player) {
-        // TODO: Should save something in storage
+        // Should not save anything, since info is already available in storage
     }
 
     @Override
     public void remove(String playerID) {
-        // TODO: Should remove something from storage
+        // Should not remove anything
     }
 
     @Override
