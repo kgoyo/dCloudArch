@@ -11,6 +11,7 @@ import cloud.cave.server.common.SubscriptionRecord;
 import cloud.cave.server.common.SubscriptionResult;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import java.util.Map;
 public class StandardSubscriptionService implements SubscriptionService {
     private ServerConfiguration configuration;
     private Requester http;
-    private Map<String,SubscriptionRecord> offlineSubcriptionMap;
+    private Map<String,SubscriptionPair> offlineSubcriptionMap;
 
     public StandardSubscriptionService() {
         http = new HttpRequester(3000,8000);
@@ -43,8 +44,14 @@ public class StandardSubscriptionService implements SubscriptionService {
 
         } catch (IOException | CaveCantConnectException | ParseException e) {
             //exception occurred, due to server error
-            SubscriptionRecord offlineRecord = offlineSubcriptionMap.get(loginName+password);
-            return offlineRecord; //is null if none was found
+
+            SubscriptionPair pair = offlineSubcriptionMap.get(loginName);
+            // Verify that loginName+pwd match a valid subscription
+            if (pair == null ||
+                    ! BCrypt.checkpw(password, pair.bCryptHash)) {
+                return new SubscriptionRecord( SubscriptionResult.LOGIN_NAME_OR_PASSWORD_IS_UNKNOWN );
+            }
+            return pair.subscriptionRecord;
         }
         if (response != null) {
             if ((boolean) response.get("success")) {
@@ -55,7 +62,8 @@ public class StandardSubscriptionService implements SubscriptionService {
                 String groupName = (String) subscription.get("groupName");
                 Region region = Region.valueOf((String) subscription.get("region"));
                 SubscriptionRecord record = new SubscriptionRecord(playerID, playerName, groupName, region);
-                offlineSubcriptionMap.put(loginName+password, record);
+                SubscriptionPair pair = new SubscriptionPair(password,record);
+                offlineSubcriptionMap.put(loginName, pair);
                 return record;
             } else {
                 //invalid credentials

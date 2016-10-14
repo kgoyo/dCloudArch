@@ -50,18 +50,6 @@ public class TestStubSubscriptionService implements SubscriptionService {
         new SubscriptionRecord("user-reserved","ReservedCrunchUser", "zzz0", Region.AARHUS)));
     
   }
-
-  private class SubscriptionPair {
-    public SubscriptionPair(String password, SubscriptionRecord record) {
-      String salt = BCrypt.gensalt(4); // Preferring faster over security
-      String hash = BCrypt.hashpw(password, salt);
-      
-      this.bCryptHash = hash;
-      this.subscriptionRecord = record;
-    }
-    public String bCryptHash;
-    public SubscriptionRecord subscriptionRecord;
-  }
   
   /** A database 'table' that has loginName as primary key (key)
    * and the subscription record as value.

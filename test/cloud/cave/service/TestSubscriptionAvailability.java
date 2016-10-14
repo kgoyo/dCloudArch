@@ -37,17 +37,37 @@ public class TestSubscriptionAvailability {
         req.toggleEnabled();
         Login actual = cave.login("test", "1234");
         System.out.println(actual);
-        Login expected = new LoginRecord(LoginResult.LOGIN_FAILED_SERVER_ERROR);
+        Login expected = new LoginRecord(LoginResult.LOGIN_FAILED_UNKNOWN_SUBSCRIPTION);
         assertEquals(expected.toString(),actual.toString());
     }
 
     @Test
-    public void ShouldBeAbleToLogin() {
+    public void shouldBeAbleToLogin() {
         cave.login( "test", "1234");
         cave.logout("testid");
         req.toggleEnabled();
         Login actual = cave.login( "test", "1234");
         String expectedString = "(LoginResult: username/LOGIN_SUCCESS)";
         assertEquals(expectedString,actual.toString());
+    }
+
+    @Test
+    public void shouldNotBeAbleToUseWrongPassword() {
+        cave.login( "test", "1234");
+        cave.logout("testid");
+        req.toggleEnabled();
+        Login actual = cave.login( "test", "wrong password");
+        Login expected = new LoginRecord(LoginResult.LOGIN_FAILED_UNKNOWN_SUBSCRIPTION);
+        assertEquals(expected.toString(),actual.toString());
+    }
+
+    @Test
+    public void shouldHaveCorrectUserNameForPassword() {
+        cave.login( "test", "1234");
+        cave.logout("testid");
+        req.toggleEnabled();
+        Login actual = cave.login( "wrong username", "1234");
+        Login expected = new LoginRecord(LoginResult.LOGIN_FAILED_UNKNOWN_SUBSCRIPTION);
+        assertEquals(expected.toString(),actual.toString());
     }
 }
