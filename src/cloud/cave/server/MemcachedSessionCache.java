@@ -71,6 +71,6 @@ public class MemcachedSessionCache implements PlayerSessionCache {
 
     @Override
     public ServerConfiguration getConfiguration() {
-        return null;
+        return config;
     }
 }
