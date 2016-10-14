@@ -365,3 +365,17 @@ Finally you need to setup a policy for the rpc queue, setting the `ha-mode` to `
 -------------------------------------------------------------------
 # iteration 5
 [Performance](https://cs.au.dk/~baerbak/c/cloud/mandatory5.html)
+
+## Exercise 'memcached-session-cache'
+Run the compose file `docker-compose-mcd.yml` and wait for daemons to start. Connect with
+
+    ant cmd -Dcpf=memcached-session-cache-client.cpf
+
+Now we are able to use the command 'back' for backtracking - **NOTE!** We crash if we trace back more times than we moved.
+
+To access the memcached you can telnet with ``telnet localhost 11211`` and use command ``get [user id]`` to see trace-stack
+
+
+-------------------------------------------------------------------
+# iteration 6
+[Exam Dry Run. Sharding.](https://cs.au.dk/~baerbak/c/cloud/mandatory6.html)
