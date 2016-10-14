@@ -1,0 +1,4 @@
+< memcached-session-cache.cpf
+
+# === Configure for server to run on localhost
+SKYCAVE_APPSERVER = localhost:5672

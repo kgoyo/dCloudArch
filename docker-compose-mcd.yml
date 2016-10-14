@@ -1,0 +1,34 @@
+version: '2'
+services:
+    skycave:
+        image: andreasmalling/dcloudarch_css-14:memcached
+
+        # Dependant on the 'mongo' container running, since it's our storage
+        depends_on:
+            - mongo
+            - rabbit
+
+        # Commands for our entry-point.sh
+        command: daemon -Dcpf=memcached-session-cache.cpf
+    mongo:
+        image: mongo:3.2.9
+
+        # Local mount of database, so data is persistent and available between containers
+        volumes:
+            - /data/db
+
+        # Mongod commands
+        command: --smallfiles --noprealloc
+    rabbit:
+        image: rabbitmq:3.6.5-management
+
+        # Open ports for communication and web management (Nice to have)
+        ports:
+            - "15672:15672"
+            - "5672:5672"
+    cache:
+        image: memcached:1.4.31
+
+        # Used for telnet to memcached
+        ports:
+            - "11211:11211"
