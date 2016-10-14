@@ -2,7 +2,6 @@ package cloud.cave.server;
 
 import cloud.cave.config.ObjectManager;
 import cloud.cave.domain.Player;
-import cloud.cave.server.common.PlayerRecord;
 import cloud.cave.server.common.Point3;
 import cloud.cave.server.common.ServerConfiguration;
 import cloud.cave.service.CaveStorage;
@@ -12,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Deque;
 import java.util.Stack;
 
 public class MemcachedSessionCache implements PlayerSessionCache {
