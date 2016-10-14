@@ -20,8 +20,6 @@ public class MemcachedSessionCache implements PlayerSessionCache {
     private ObjectManager objectManager;
     private Logger logger;
     private CaveStorage caveStorage;
-    private ServerConfiguration config;
-    private MemcachedClient memcachedClient;
     private StandardSessionCache cache;
     private ServerConfiguration config;
     private MemcachedClient memcachedClient;
@@ -29,7 +27,7 @@ public class MemcachedSessionCache implements PlayerSessionCache {
 
     @Override
     public Player get(String playerID) {
-        cache.get(playerID);
+        return cache.get(playerID);
     }
 
     @Override
@@ -75,6 +73,6 @@ public class MemcachedSessionCache implements PlayerSessionCache {
 
     @Override
     public ServerConfiguration getConfiguration() {
-        return null;
+        return config;
     }
 }
