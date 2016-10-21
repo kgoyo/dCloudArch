@@ -1,7 +1,8 @@
 version: '2'
 services:
     skycave:
-        image: andreasmalling/dcloudarch_css-14
+        build: .
+        image: kgoyo/cave
 
         # Opens port for communicating with the daemon
         ports:
@@ -12,7 +13,7 @@ services:
             - mongo
 
         # Commands for our entry-point.sh
-        command: daemon -Dcpf=mongo-storage.cpf
+        command: daemon -Dcpf=exam-a.cpf
     mongo:
         image: mongo:3.2.9
         # Local mount of database, so data is persistent and available between containers
