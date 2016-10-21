@@ -13,7 +13,7 @@ services:
             - mongo
 
         # Commands for our entry-point.sh
-        command: daemon -Dcpf=exam-a.cpf
+        command: daemon -Dcpf=examb.cpf
     mongo:
         image: henrikbaerbak/examb:v1
         # Local mount of database, so data is persistent and available between containers
