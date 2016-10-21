@@ -103,4 +103,6 @@ public interface CaveStorage extends ExternalService {
    */
   int computeCountOfActivePlayers();
 
+  int countRooms();
+
 }

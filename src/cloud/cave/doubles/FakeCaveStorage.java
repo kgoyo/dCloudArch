@@ -140,6 +140,11 @@ public class FakeCaveStorage implements CaveStorage {
     return getPlayerList().size();
   }
 
+  @Override
+  public int countRooms() {
+    return roomMap.size();
+  }
+
   /** Compute the list of players in the cave.
    * 
    * @return list of all players in the cave.

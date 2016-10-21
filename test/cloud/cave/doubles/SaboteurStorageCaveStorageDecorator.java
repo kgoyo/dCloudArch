@@ -115,6 +115,11 @@ public class SaboteurStorageCaveStorageDecorator implements CaveStorage {
     }
 
     @Override
+    public int countRooms() {
+        return 0; //not implemented
+    }
+
+    @Override
     public void initialize(ObjectManager objectManager, ServerConfiguration config) {
         storage.initialize(objectManager, config);
     }

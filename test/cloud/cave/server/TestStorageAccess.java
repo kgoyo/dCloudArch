@@ -170,4 +170,9 @@ class SpyCaveStorage implements CaveStorage {
     return decoratee.computeCountOfActivePlayers();
   }
 
+  @Override
+  public int countRooms() {
+    return 0; //not implemented
+  }
+
 }

@@ -109,6 +109,15 @@ public class MongoStorageDecorator implements CaveStorage {
     }
 
     @Override
+    public int countRooms() {
+        try {
+            return storage.countRooms();
+        } catch (MongoException e) {
+            throw new CaveStorageUnavailableException("cant connect to database");
+        }
+    }
+
+    @Override
     public void initialize(ObjectManager objectManager, ServerConfiguration config) {
         storage.initialize(objectManager,config);
     }

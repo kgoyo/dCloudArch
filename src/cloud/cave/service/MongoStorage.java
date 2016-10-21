@@ -185,6 +185,11 @@ public class MongoStorage implements CaveStorage {
     }
 
     @Override
+    public int countRooms() {
+        return (int) rooms.count();
+    }
+
+    @Override
     public void initialize(ObjectManager objectManager, ServerConfiguration config) {
         this.serverConfiguration = config;
         this.logger = LoggerFactory.getLogger(MongoStorage.class);
