@@ -15,8 +15,8 @@ SKYCAVE_SUBSCRIPTION_IMPLEMENTATION = cloud.cave.service.StandardSubscriptionSer
 SKYCAVE_SUBSCRIPTIONSERVER = skycave.baerbak.com:7654
 
 # = Cave storage
-SKYCAVE_CAVESTORAGE_IMPLEMENTATION = cloud.cave.doubles.FakeCaveStorage
-# SKYCAVE_CAVESTORAGE_IMPLEMENTATION = cloud.cave.service.MongoStorage
+#SKYCAVE_CAVESTORAGE_IMPLEMENTATION = cloud.cave.doubles.FakeCaveStorage
+SKYCAVE_CAVESTORAGE_IMPLEMENTATION = cloud.cave.service.MongoStorageDecorator
 SKYCAVE_DBSERVER = mongo:27017
 
 # = Weather service
