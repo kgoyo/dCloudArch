@@ -25,6 +25,8 @@
  - .cpf files are used to determine which configurations to use, can set the abstractfactories
  - PlayerServant objects are created on login in the CaveServant
  - when running the cmd/daemon, the ordering of arguments are invalid
+ 
+ ftp port is 22
 
 -------------------------------------------------------------------
 # iteration 0

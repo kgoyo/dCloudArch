@@ -1,7 +1,7 @@
 version: '2'
 services:
     skycave:
-        image: andreasmalling/dcloudarch_css-14
+        image: kgoyo/cave
 
         # Opens port for communicating with the daemon
         ports:
